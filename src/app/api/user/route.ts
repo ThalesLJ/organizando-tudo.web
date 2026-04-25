@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
       user: {
         username: String(externalUser.username),
         email: externalUser.email ? String(externalUser.email) : "",
+        preferences: externalUser.preferences ?? null,
       },
     });
   } catch {

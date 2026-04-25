@@ -8,13 +8,40 @@ type ExternalUserApiResponse = {
   data?: {
     username?: string;
     email?: string;
+    preferences?: {
+      language?: string;
+      colors?: {
+        backgroundPrimary?: string;
+        backgroundSecondary?: string;
+        textPrimary?: string;
+        textSecondary?: string;
+      } | null;
+    };
   };
   user?: {
     username?: string;
     email?: string;
+    preferences?: {
+      language?: string;
+      colors?: {
+        backgroundPrimary?: string;
+        backgroundSecondary?: string;
+        textPrimary?: string;
+        textSecondary?: string;
+      } | null;
+    };
   };
   username?: string;
   email?: string;
+  preferences?: {
+    language?: string;
+    colors?: {
+      backgroundPrimary?: string;
+      backgroundSecondary?: string;
+      textPrimary?: string;
+      textSecondary?: string;
+    } | null;
+  };
 };
 
 function normalizeExternalUser(body: ExternalUserApiResponse) {
@@ -26,6 +53,10 @@ function normalizeExternalUser(body: ExternalUserApiResponse) {
   return {
     username: String(user.username),
     email: user.email ? String(user.email) : "",
+    preferences: {
+      language: typeof user.preferences?.language === "string" ? user.preferences.language : "en",
+      colors: user.preferences?.colors ?? null,
+    },
   };
 }
 

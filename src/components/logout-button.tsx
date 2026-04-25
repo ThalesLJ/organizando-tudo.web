@@ -19,9 +19,10 @@ export function LogoutButton() {
       type="button"
       onClick={handleLogout}
       disabled={loading}
-      className="rounded-md bg-zinc-900 px-3 py-2 text-sm text-white disabled:opacity-60"
+      className="rounded border border-[#b88f7f] bg-[#8f6453] px-2 py-1 text-xs text-white disabled:opacity-60"
+      title="Sair"
     >
-      {loading ? "Saindo..." : "Sair"}
+      {loading ? "..." : "⎋"}
     </button>
   );
 }

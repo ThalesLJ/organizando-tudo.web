@@ -62,6 +62,7 @@ export function LoginForm() {
           E-mail ou usuário
         </label>
         <input
+          suppressHydrationWarning
           id="identifier"
           name="identifier"
           type="text"
@@ -74,6 +75,7 @@ export function LoginForm() {
           Senha
         </label>
         <input
+          suppressHydrationWarning
           id="password"
           name="password"
           type="password"

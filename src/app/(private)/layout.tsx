@@ -6,31 +6,35 @@ export default async function PrivateLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const user = await requireAuthenticatedUser();
+  const colors = user.preferences?.colors;
+  const style = colors
+    ? {
+        ["--bg-primary" as string]: colors.backgroundPrimary ?? "#f8fafc",
+        ["--bg-secondary" as string]: colors.backgroundSecondary ?? "#ffffff",
+        ["--text-primary" as string]: colors.textPrimary ?? "#18181b",
+        ["--text-secondary" as string]: colors.textSecondary ?? "#52525b",
+      }
+    : undefined;
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 px-6 py-8">
-      <header className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white p-4">
-        <div className="flex flex-col">
-          <span className="text-sm text-zinc-500">Usuário autenticado</span>
-          <strong className="text-zinc-900">{user.username}</strong>
-        </div>
-        <nav className="flex items-center gap-3">
-          <Link href="/notes" className="text-sm text-zinc-700 hover:text-zinc-950">
-            Notas
-          </Link>
-          <Link href="/add-note" className="text-sm text-zinc-700 hover:text-zinc-950">
-            Nova nota
-          </Link>
-          <Link href="/edit-note" className="text-sm text-zinc-700 hover:text-zinc-950">
-            Editar nota
-          </Link>
-          <Link href="/settings" className="text-sm text-zinc-700 hover:text-zinc-950">
-            Configurações
-          </Link>
+    <div className="min-h-screen bg-[#ecd8cc]" style={style}>
+      <header className="bg-[#8f6453] px-3 py-2 text-sm text-white">
+        <nav className="mx-auto flex w-full max-w-6xl items-center justify-between">
+          <div className="flex items-center gap-5 text-xs sm:text-sm">
+            <span>{user.username}</span>
+            <Link href="/notes" className="hover:underline">
+              Notes
+            </Link>
+            <Link href="/settings" className="hover:underline">
+              Settings
+            </Link>
+          </div>
           <LogoutButton />
         </nav>
       </header>
-      <main className="rounded-lg border border-zinc-200 bg-white p-6">{children}</main>
+      <main className="mx-auto w-full max-w-6xl px-3 py-4">
+        <div className="rounded-md border border-[#c4a293] bg-[#ecd8cc] p-3">{children}</div>
+      </main>
     </div>
   );
 }
