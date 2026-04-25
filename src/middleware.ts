@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { authConfig } from "@/lib/auth-config";
 
 const publicRoutes = ["/login", "/register", "/recover"];
-const privateRoutes = ["/notes", "/add-note", "/edit-note", "/settings"];
+const privateRoutes = ["/dashboard", "/financial", "/notes", "/add-note", "/edit-note", "/settings"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -17,12 +17,12 @@ export function middleware(request: NextRequest) {
   }
 
   if (isPublicRoute && token) {
-    return NextResponse.redirect(new URL("/notes", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/login", "/register", "/recover", "/notes/:path*", "/add-note/:path*", "/edit-note/:path*", "/settings/:path*"],
+  matcher: ["/login", "/register", "/recover", "/dashboard/:path*", "/financial/:path*", "/notes/:path*", "/add-note/:path*", "/edit-note/:path*", "/settings/:path*"],
 };

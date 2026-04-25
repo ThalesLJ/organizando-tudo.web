@@ -27,6 +27,12 @@ export default async function PrivateLayout({
         <nav className="mx-auto flex w-full max-w-6xl items-center justify-between">
           <div className="flex items-center gap-5 text-xs sm:text-sm">
             <span>{user.username}</span>
+            <Link href="/dashboard" className="hover:underline">
+              {m.nav.dashboard}
+            </Link>
+            <Link href="/financial" className="hover:underline">
+              {m.nav.financial}
+            </Link>
             <Link href="/notes" className="hover:underline">
               {m.nav.notes}
             </Link>
