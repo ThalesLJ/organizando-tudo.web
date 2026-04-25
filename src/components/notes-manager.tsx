@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useLocaleMessages } from "@/lib/locale-client";
 
 type NoteItem = {
   id: string;
@@ -43,6 +44,7 @@ function stripHtml(value: string): string {
 }
 
 export function NotesManager() {
+  const { messages } = useLocaleMessages();
   const [notes, setNotes] = useState<NoteItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -60,11 +62,11 @@ export function NotesManager() {
       const response = await fetch("/api/notes", { cache: "no-store" });
       const data = await response.json();
       if (!response.ok || !data.success) {
-        throw new Error(extractErrorMessage(data.error, "Falha ao carregar notas"));
+        throw new Error(extractErrorMessage(data.error, messages.notes.loadError));
       }
       setNotes(Array.isArray(data.data) ? data.data : []);
     } catch (loadError) {
-      setError(extractErrorMessage(loadError, "Falha ao carregar notas"));
+      setError(extractErrorMessage(loadError, messages.notes.loadError));
     } finally {
       setIsLoading(false);
     }
@@ -78,14 +80,14 @@ export function NotesManager() {
         const response = await fetch("/api/notes", { cache: "no-store" });
         const data = await response.json();
         if (!response.ok || !data.success) {
-          throw new Error(extractErrorMessage(data.error, "Falha ao carregar notas"));
+          throw new Error(extractErrorMessage(data.error, messages.notes.loadError));
         }
         if (!isCancelled) {
           setNotes(Array.isArray(data.data) ? data.data : []);
         }
       } catch (loadError) {
         if (!isCancelled) {
-          setError(extractErrorMessage(loadError, "Falha ao carregar notas"));
+          setError(extractErrorMessage(loadError, messages.notes.loadError));
         }
       } finally {
         if (!isCancelled) {
@@ -98,10 +100,10 @@ export function NotesManager() {
     return () => {
       isCancelled = true;
     };
-  }, []);
+  }, [messages.notes.loadError]);
 
   async function handleDelete(noteId: string) {
-    const confirmed = window.confirm("Deseja excluir esta nota?");
+    const confirmed = window.confirm(messages.notes.deleteConfirm);
     if (!confirmed) {
       return;
     }
@@ -114,12 +116,12 @@ export function NotesManager() {
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
-        throw new Error(extractErrorMessage(data.error, "Falha ao excluir nota"));
+        throw new Error(extractErrorMessage(data.error, messages.notes.deleteError));
       }
 
       await loadNotes(false);
     } catch (deleteError) {
-      setError(extractErrorMessage(deleteError, "Falha ao excluir nota"));
+      setError(extractErrorMessage(deleteError, messages.notes.deleteError));
     } finally {
       setIsDeleting(false);
     }
@@ -161,80 +163,80 @@ export function NotesManager() {
 
   function getPreviewContent(note: NoteItem): string {
     if (!note.isPublic) {
-      return '<div class="text-center text-xs text-zinc-500">🔒 Conteúdo privado</div>';
+      return `<div class="text-center text-xs text-zinc-500">🔒 ${messages.notes.privateContent}</div>`;
     }
 
     const trimmedContent = note.content.trim();
     if (!trimmedContent) {
-      return '<div class="text-center text-xs text-zinc-500">Sem conteúdo</div>';
+      return `<div class="text-center text-xs text-zinc-500">${messages.notes.noContent}</div>`;
     }
     return trimmedContent;
   }
 
   return (
     <section className="space-y-3">
-      <div className="space-y-3 rounded-md border border-[#b88f7f] bg-[#ecd8cc] p-3">
+      <div className="space-y-3 rounded-md border border-zinc-300/40 bg-[var(--bg-primary)] p-3">
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search notes..."
-          className="w-full rounded border border-[#b88f7f] bg-[#f2e3da] px-3 py-2 text-sm text-[#5f4339] outline-none"
+          placeholder={messages.notes.searchPlaceholder}
+          className="w-full rounded border border-zinc-300/50 bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none"
         />
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <button
             type="button"
             onClick={() => setVisibilityFilter("all")}
-            className={`rounded border px-2 py-1 ${visibilityFilter === "all" ? "border-[#8f6453] bg-[#8f6453] text-white" : "border-[#b88f7f] bg-[#f2e3da] text-[#5f4339]"}`}
+            className={`rounded border px-2 py-1 ${visibilityFilter === "all" ? "border-zinc-700 bg-zinc-700 text-white" : "border-zinc-300/50 bg-[var(--bg-secondary)] text-[var(--text-primary)]"}`}
           >
-            All
+            {messages.notes.all}
           </button>
           <button
             type="button"
             onClick={() => setVisibilityFilter("public")}
-            className={`rounded border px-2 py-1 ${visibilityFilter === "public" ? "border-[#8f6453] bg-[#8f6453] text-white" : "border-[#b88f7f] bg-[#f2e3da] text-[#5f4339]"}`}
+            className={`rounded border px-2 py-1 ${visibilityFilter === "public" ? "border-zinc-700 bg-zinc-700 text-white" : "border-zinc-300/50 bg-[var(--bg-secondary)] text-[var(--text-primary)]"}`}
           >
-            Public
+            {messages.notes.public}
           </button>
           <button
             type="button"
             onClick={() => setVisibilityFilter("private")}
-            className={`rounded border px-2 py-1 ${visibilityFilter === "private" ? "border-[#8f6453] bg-[#8f6453] text-white" : "border-[#b88f7f] bg-[#f2e3da] text-[#5f4339]"}`}
+            className={`rounded border px-2 py-1 ${visibilityFilter === "private" ? "border-zinc-700 bg-zinc-700 text-white" : "border-zinc-300/50 bg-[var(--bg-secondary)] text-[var(--text-primary)]"}`}
           >
-            Private
+            {messages.notes.private}
           </button>
           <select
             value={sortBy}
             onChange={(event) => setSortBy(event.target.value as typeof sortBy)}
-            className="rounded border border-[#b88f7f] bg-[#f2e3da] px-2 py-1 text-[#5f4339]"
+            className="rounded border border-zinc-300/50 bg-[var(--bg-secondary)] px-2 py-1 text-[var(--text-primary)]"
           >
-            <option value="date-desc">Sort by Date DESC</option>
-            <option value="date-asc">Sort by Date ASC</option>
-            <option value="title-asc">Sort by Title A-Z</option>
-            <option value="title-desc">Sort by Title Z-A</option>
+            <option value="date-desc">{messages.notes.sortDateDesc}</option>
+            <option value="date-asc">{messages.notes.sortDateAsc}</option>
+            <option value="title-asc">{messages.notes.sortTitleAsc}</option>
+            <option value="title-desc">{messages.notes.sortTitleDesc}</option>
           </select>
         </div>
       </div>
 
       {error ? <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
-      {isLoading ? <p className="text-sm text-zinc-500">Carregando...</p> : null}
-      {!isLoading && filteredNotes.length === 0 ? <p className="text-sm text-zinc-500">No notes found</p> : null}
+      {isLoading ? <p className="text-sm text-[var(--text-secondary)]">{messages.notes.loading}</p> : null}
+      {!isLoading && filteredNotes.length === 0 ? <p className="text-sm text-[var(--text-secondary)]">{messages.notes.empty}</p> : null}
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {filteredNotes.map((note) => (
-          <article key={note.id} className="rounded-md border border-[#c9a89a] bg-[#f2e3da] p-2 text-[#5f4339]">
-            <h3 className="border-b border-[#d9bfb2] pb-1 text-sm font-semibold">{note.title}</h3>
+          <article key={note.id} className="rounded-md border border-zinc-300/40 bg-[var(--bg-secondary)] p-2 text-[var(--text-primary)]">
+            <h3 className="border-b border-zinc-300/40 pb-1 text-sm font-semibold">{note.title}</h3>
             <div
-              className={`mt-2 h-28 overflow-hidden rounded border border-[#d9bfb2] bg-[#eedcd1] p-2 text-xs ${!note.isPublic ? "opacity-70" : ""}`}
+              className={`mt-2 h-28 overflow-hidden rounded border border-zinc-300/40 bg-[var(--bg-primary)] p-2 text-xs ${!note.isPublic ? "opacity-70" : ""}`}
               dangerouslySetInnerHTML={{ __html: getPreviewContent(note) }}
             />
-            <div className="mt-2 flex items-center justify-between text-[11px] text-[#7a5a4d]">
+            <div className="mt-2 flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
               <span>{formatDate(note.updatedAt)}</span>
               <div className="flex gap-2">
                 <Link href={`/view-note/${note.id}`} className="underline">
-                  View
+                  {messages.notes.view}
                 </Link>
                 <Link href={`/edit-note/${note.id}`} className="underline">
-                  Edit
+                  {messages.notes.edit}
                 </Link>
                 <button
                   type="button"
@@ -242,7 +244,7 @@ export function NotesManager() {
                   onClick={() => void handleDelete(note.id)}
                   className="underline disabled:opacity-60"
                 >
-                  Delete
+                  {messages.notes.delete}
                 </button>
               </div>
             </div>
@@ -252,7 +254,7 @@ export function NotesManager() {
 
       <Link
         href="/add-note/new"
-        className="fixed bottom-6 right-6 flex h-11 w-11 items-center justify-center rounded-full bg-[#8f6453] text-3xl leading-none text-white shadow-md"
+        className="fixed bottom-6 right-6 flex h-11 w-11 items-center justify-center rounded-full border border-zinc-300/50 bg-[var(--bg-secondary)] text-3xl leading-none text-[var(--text-primary)] shadow-md"
       >
         +
       </Link>

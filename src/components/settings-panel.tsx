@@ -1,9 +1,12 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { AppLocale } from "@/lib/messages";
+import { useLocaleMessages, writeLocale } from "@/lib/locale-client";
 
 type UserPreferences = {
-  language: "en" | "pt" | "es";
+  language: AppLocale;
   colors: {
     backgroundPrimary?: string;
     backgroundSecondary?: string;
@@ -26,6 +29,13 @@ type ColorsPayload = {
   backgroundSecondary: string;
   textPrimary: string;
   textSecondary: string;
+};
+
+const DEFAULT_COLORS: ColorsPayload = {
+  backgroundPrimary: "#f8fafc",
+  backgroundSecondary: "#ffffff",
+  textPrimary: "#18181b",
+  textSecondary: "#52525b",
 };
 
 function applyColors(colors: Partial<ColorsPayload>) {
@@ -61,18 +71,15 @@ function getErrorMessage(error: unknown, fallback: string): string {
 }
 
 export function SettingsPanel() {
+  const router = useRouter();
+  const { messages } = useLocaleMessages();
   const [isLoading, setIsLoading] = useState(true);
   const [isSavingColors, setIsSavingColors] = useState(false);
   const [isSavingLanguage, setIsSavingLanguage] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [language, setLanguage] = useState<"en" | "pt" | "es">("en");
-  const [colors, setColors] = useState<ColorsPayload>({
-    backgroundPrimary: "#f8fafc",
-    backgroundSecondary: "#ffffff",
-    textPrimary: "#18181b",
-    textSecondary: "#52525b",
-  });
+  const [language, setLanguage] = useState<AppLocale>("en");
+  const [colors, setColors] = useState<ColorsPayload>(DEFAULT_COLORS);
 
   useEffect(() => {
     async function load() {
@@ -82,7 +89,7 @@ export function SettingsPanel() {
         const response = await fetch("/api/user", { cache: "no-store" });
         const data = (await response.json()) as UserResponse;
         if (!response.ok || !data.success) {
-          throw new Error("Falha ao carregar configurações");
+          throw new Error(messages.settings.loadError);
         }
 
         const prefs = data.user.preferences;
@@ -91,23 +98,23 @@ export function SettingsPanel() {
         }
 
         const loadedColors = {
-          backgroundPrimary: prefs?.colors?.backgroundPrimary ?? "#f8fafc",
-          backgroundSecondary: prefs?.colors?.backgroundSecondary ?? "#ffffff",
-          textPrimary: prefs?.colors?.textPrimary ?? "#18181b",
-          textSecondary: prefs?.colors?.textSecondary ?? "#52525b",
+          backgroundPrimary: prefs?.colors?.backgroundPrimary ?? DEFAULT_COLORS.backgroundPrimary,
+          backgroundSecondary: prefs?.colors?.backgroundSecondary ?? DEFAULT_COLORS.backgroundSecondary,
+          textPrimary: prefs?.colors?.textPrimary ?? DEFAULT_COLORS.textPrimary,
+          textSecondary: prefs?.colors?.textSecondary ?? DEFAULT_COLORS.textSecondary,
         };
 
         setColors(loadedColors);
         applyColors(loadedColors);
       } catch (loadError) {
-        setError(getErrorMessage(loadError, "Falha ao carregar configurações"));
+        setError(getErrorMessage(loadError, messages.settings.loadError));
       } finally {
         setIsLoading(false);
       }
     }
 
     void load();
-  }, []);
+  }, [messages.settings.loadError]);
 
   async function handleSaveColors(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -122,13 +129,13 @@ export function SettingsPanel() {
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
-        throw new Error(getErrorMessage(data.error, "Falha ao salvar cores"));
+        throw new Error(getErrorMessage(data.error, messages.settings.saveColorsError));
       }
 
       applyColors(colors);
-      setMessage("Cores atualizadas com sucesso.");
+      setMessage(messages.settings.colorsSaved);
     } catch (saveError) {
-      setError(getErrorMessage(saveError, "Falha ao salvar cores"));
+      setError(getErrorMessage(saveError, messages.settings.saveColorsError));
     } finally {
       setIsSavingColors(false);
     }
@@ -147,35 +154,60 @@ export function SettingsPanel() {
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
-        throw new Error(getErrorMessage(data.error, "Falha ao salvar idioma"));
+        throw new Error(getErrorMessage(data.error, messages.settings.saveLanguageError));
       }
 
-      document.cookie = `locale=${language}; path=/; max-age=31536000; samesite=lax`;
-      document.documentElement.lang = language;
-      setMessage("Idioma atualizado com sucesso.");
+      writeLocale(language);
+      setMessage(messages.settings.languageSaved);
+      router.refresh();
     } catch (saveError) {
-      setError(getErrorMessage(saveError, "Falha ao salvar idioma"));
+      setError(getErrorMessage(saveError, messages.settings.saveLanguageError));
     } finally {
       setIsSavingLanguage(false);
+    }
+  }
+
+  async function handleResetColors() {
+    setIsSavingColors(true);
+    setError("");
+    setMessage("");
+    try {
+      const response = await fetch("/api/user/settings/colors", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(DEFAULT_COLORS),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(getErrorMessage(data.error, messages.settings.saveColorsError));
+      }
+
+      setColors(DEFAULT_COLORS);
+      applyColors(DEFAULT_COLORS);
+      setMessage(messages.settings.colorsReset);
+    } catch (resetError) {
+      setError(getErrorMessage(resetError, messages.settings.saveColorsError));
+    } finally {
+      setIsSavingColors(false);
     }
   }
 
   return (
     <section className="space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold">Configurações</h1>
-        <p className="text-sm text-zinc-500">Ajuste idioma e cores da interface.</p>
+        <h1 className="text-2xl font-semibold">{messages.settings.title}</h1>
+        <p className="text-sm text-[var(--text-secondary)]">{messages.settings.subtitle}</p>
       </div>
 
-      {isLoading ? <p className="text-sm text-zinc-500">Carregando...</p> : null}
+      {isLoading ? <p className="text-sm text-[var(--text-secondary)]">{messages.settings.loading}</p> : null}
       {error ? <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
       {message ? <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{message}</p> : null}
 
       <form onSubmit={handleSaveLanguage} className="space-y-3 rounded-md border border-zinc-200 p-4">
-        <h2 className="text-lg font-medium">Idioma</h2>
+        <h2 className="text-lg font-medium">{messages.settings.languageTitle}</h2>
         <select
           value={language}
-          onChange={(event) => setLanguage(event.target.value as "en" | "pt" | "es")}
+          onChange={(event) => setLanguage(event.target.value as AppLocale)}
           className="rounded-md border border-zinc-300 px-3 py-2"
         >
           <option value="en">English</option>
@@ -186,18 +218,18 @@ export function SettingsPanel() {
           <button
             type="submit"
             disabled={isSavingLanguage}
-            className="rounded-md bg-zinc-900 px-3 py-2 text-sm text-white disabled:opacity-60"
+            className="rounded-md border border-zinc-300/50 bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] disabled:opacity-60"
           >
-            {isSavingLanguage ? "Salvando..." : "Salvar idioma"}
+            {isSavingLanguage ? messages.settings.loading : messages.settings.saveLanguage}
           </button>
         </div>
       </form>
 
       <form onSubmit={handleSaveColors} className="space-y-3 rounded-md border border-zinc-200 p-4">
-        <h2 className="text-lg font-medium">Cores</h2>
+        <h2 className="text-lg font-medium">{messages.settings.colorsTitle}</h2>
 
         <label className="flex items-center justify-between gap-3 text-sm">
-          Fundo primário
+          {messages.settings.backgroundPrimary}
           <input
             type="color"
             value={colors.backgroundPrimary}
@@ -206,7 +238,7 @@ export function SettingsPanel() {
         </label>
 
         <label className="flex items-center justify-between gap-3 text-sm">
-          Fundo secundário
+          {messages.settings.backgroundSecondary}
           <input
             type="color"
             value={colors.backgroundSecondary}
@@ -215,7 +247,7 @@ export function SettingsPanel() {
         </label>
 
         <label className="flex items-center justify-between gap-3 text-sm">
-          Texto primário
+          {messages.settings.textPrimary}
           <input
             type="color"
             value={colors.textPrimary}
@@ -224,7 +256,7 @@ export function SettingsPanel() {
         </label>
 
         <label className="flex items-center justify-between gap-3 text-sm">
-          Texto secundário
+          {messages.settings.textSecondary}
           <input
             type="color"
             value={colors.textSecondary}
@@ -232,13 +264,21 @@ export function SettingsPanel() {
           />
         </label>
 
-        <div>
+        <div className="flex flex-wrap gap-2">
           <button
             type="submit"
             disabled={isSavingColors}
-            className="rounded-md bg-zinc-900 px-3 py-2 text-sm text-white disabled:opacity-60"
+            className="rounded-md border border-zinc-300/50 bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] disabled:opacity-60"
           >
-            {isSavingColors ? "Salvando..." : "Salvar cores"}
+            {isSavingColors ? messages.settings.loading : messages.settings.saveColors}
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleResetColors()}
+            disabled={isSavingColors}
+            className="rounded-md border border-zinc-300/50 bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] disabled:opacity-60"
+          >
+            {messages.settings.resetColors}
           </button>
         </div>
       </form>

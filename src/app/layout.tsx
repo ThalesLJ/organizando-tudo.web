@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cookies } from "next/headers";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { UserPreferencesRuntime } from "@/components/user-preferences-runtime";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,7 +34,8 @@ export default async function RootLayout({
       lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-50">
+      <body className="min-h-full flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)]">
+        <UserPreferencesRuntime />
         <LanguageSwitcher />
         {children}
       </body>

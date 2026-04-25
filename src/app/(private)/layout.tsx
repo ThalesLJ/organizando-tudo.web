@@ -1,10 +1,15 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { LogoutButton } from "@/components/logout-button";
 import { requireAuthenticatedUser } from "@/lib/require-auth";
+import { getMessages } from "@/lib/messages";
 
 export default async function PrivateLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const cookieStore = await cookies();
+  const locale = cookieStore.get("locale")?.value;
+  const m = getMessages(locale);
   const user = await requireAuthenticatedUser();
   const colors = user.preferences?.colors;
   const style = colors
@@ -17,23 +22,23 @@ export default async function PrivateLayout({
     : undefined;
 
   return (
-    <div className="min-h-screen bg-[#ecd8cc]" style={style}>
-      <header className="bg-[#8f6453] px-3 py-2 text-sm text-white">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]" style={style}>
+      <header className="bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] border-b border-zinc-300/40">
         <nav className="mx-auto flex w-full max-w-6xl items-center justify-between">
           <div className="flex items-center gap-5 text-xs sm:text-sm">
             <span>{user.username}</span>
             <Link href="/notes" className="hover:underline">
-              Notes
+              {m.nav.notes}
             </Link>
             <Link href="/settings" className="hover:underline">
-              Settings
+              {m.nav.settings}
             </Link>
           </div>
-          <LogoutButton />
+          <LogoutButton label={m.nav.logout} />
         </nav>
       </header>
       <main className="mx-auto w-full max-w-6xl px-3 py-4">
-        <div className="rounded-md border border-[#c4a293] bg-[#ecd8cc] p-3">{children}</div>
+        <div className="rounded-md border border-zinc-300/40 bg-[var(--bg-secondary)] p-3 text-[var(--text-primary)]">{children}</div>
       </main>
     </div>
   );

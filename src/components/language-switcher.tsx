@@ -1,30 +1,22 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-type LocaleOption = "en" | "pt" | "es";
-
-function readLocaleFromCookie(): LocaleOption {
-  const match = document.cookie.match(/(?:^|;\s*)locale=([^;]+)/);
-  const locale = decodeURIComponent(match?.[1] ?? "en");
-  if (locale === "pt" || locale === "es") {
-    return locale;
-  }
-  return "en";
-}
+import { AppLocale } from "@/lib/messages";
+import { readLocaleFromCookie, writeLocale } from "@/lib/locale-client";
 
 export function LanguageSwitcher() {
-  const [locale, setLocale] = useState<LocaleOption>(() => {
+  const router = useRouter();
+  const [locale, setLocale] = useState<AppLocale>(() => {
     if (typeof document === "undefined") {
       return "en";
     }
     return readLocaleFromCookie();
   });
 
-  async function handleChange(nextLocale: LocaleOption) {
+  async function handleChange(nextLocale: AppLocale) {
     setLocale(nextLocale);
-    document.cookie = `locale=${nextLocale}; path=/; max-age=31536000; samesite=lax`;
-    document.documentElement.lang = nextLocale;
+    writeLocale(nextLocale);
 
     try {
       await fetch("/api/user/settings/language", {
@@ -33,15 +25,16 @@ export function LanguageSwitcher() {
         body: JSON.stringify({ language: nextLocale }),
       });
     } catch {}
+    router.refresh();
   }
 
   return (
-    <div className="fixed right-4 top-4 z-50 rounded-md border border-zinc-300 bg-white/90 px-2 py-1 shadow-sm backdrop-blur">
+    <div className="fixed right-4 top-4 z-50 rounded-md border border-zinc-300/50 bg-[var(--bg-secondary)] px-2 py-1 shadow-sm backdrop-blur">
       <select
         suppressHydrationWarning
         value={locale}
-        onChange={(event) => void handleChange(event.target.value as LocaleOption)}
-        className="rounded border border-zinc-300 px-2 py-1 text-xs"
+        onChange={(event) => void handleChange(event.target.value as AppLocale)}
+        className="rounded border border-zinc-300/50 bg-[var(--bg-secondary)] px-2 py-1 text-xs text-[var(--text-primary)]"
       >
         <option value="en">EN</option>
         <option value="pt">PT</option>
