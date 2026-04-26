@@ -89,12 +89,16 @@ jobs:
 
           echo "deploy finished on port $web_port"
 
-  validate-web-public-url:
+  validate-web-public-health:
     runs-on: ubuntu-latest
     needs: deploy-web
     steps:
-      - name: Validate Web public URL
+      - name: Validate Web public health endpoint
         run: |
           set -euo pipefail
-          web_url="https://organizandotudo.thaleslj.com"
-          curl -fsSL --retry 10 --retry-delay 3 --retry-all-errors "$web_url" >/dev/null
+          health_url="https://organizandotudo.thaleslj.com/api/health"
+          response="$(curl -fsS --retry 10 --retry-delay 3 --retry-all-errors "$health_url")"
+          if [[ "$response" != *'"status":"ok"'* ]]; then
+            echo "Unexpected health response: $response"
+            exit 1
+          fi
