@@ -33,7 +33,7 @@ export function RecoverForm() {
       return;
     }
 
-    setMessage("Se o e-mail existir, o código foi enviado.");
+    setMessage("Se o e-mail existir, o código será enviado.");
     setSending(false);
   }
 
