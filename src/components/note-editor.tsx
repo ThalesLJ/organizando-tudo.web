@@ -9,6 +9,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import { useEffect, useState } from "react";
+import { AppLoading } from "@/components/app-loading";
 import { useLocaleMessages } from "@/lib/locale-client";
 
 type NoteResponse = {
@@ -137,7 +138,7 @@ export function NoteEditor({ mode, noteId }: NoteEditorProps) {
   }
 
   if (isLoading) {
-    return <p className="ui-muted text-sm">{messages.viewer.loading}</p>;
+    return <AppLoading label={messages.viewer.loading} />;
   }
 
   return (

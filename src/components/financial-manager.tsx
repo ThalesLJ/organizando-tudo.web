@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { AppLoading } from "@/components/app-loading";
 import { useLocaleMessages } from "@/lib/locale-client";
 
 type BudgetItem = {
@@ -278,18 +279,15 @@ export function FinancialManager() {
   }
 
   if (loading) {
-    return (
-      <section className="private-floating-page">
-        <p className="ui-muted text-sm">{messages.financial.loading}</p>
-      </section>
-    );
+    return <AppLoading label={messages.financial.loading} />;
   }
 
   return (
     <section className="private-floating-page space-y-5">
       {error ? <p className="ui-error">{error}</p> : null}
 
-      <form onSubmit={handleSubmitBudget} className="ui-card space-y-4 p-5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <form onSubmit={handleSubmitBudget} className="ui-card space-y-4 p-5">
         <h2 className="text-lg font-semibold">{messages.financial.createBudgetSection}</h2>
         <input
           value={budgetForm.name}
@@ -315,13 +313,14 @@ export function FinancialManager() {
           className="ui-input w-full"
           required
         />
+        <div className="flex flex-wrap items-center gap-3">
         <input
           type="color"
           value={budgetForm.color}
           onChange={(event) => setBudgetForm((current) => ({ ...current, color: event.target.value }))}
-          className="h-12 w-24 rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-1"
+          className="h-12 w-24 shrink-0 rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-1"
         />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button disabled={saving} className="ui-button-primary">
             {editingBudgetId ? messages.financial.updateBudget : messages.financial.addBudget}
           </button>
@@ -338,33 +337,16 @@ export function FinancialManager() {
             </button>
           ) : null}
         </div>
-      </form>
+        </div>
+        </form>
 
-      <section className="ui-card space-y-3 p-5">
-        <h3 className="text-base font-semibold">{messages.financial.listBudgetSection}</h3>
-        {budgets.length === 0 ? <p className="ui-muted text-sm">{messages.financial.emptyBudgets}</p> : null}
-        {budgets.map((item) => (
-          <article key={item.id} className="rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-4 text-sm">
-            <p className="font-semibold">{item.name}</p>
-            <p className="ui-muted text-xs">{item.amount.toFixed(2)}</p>
-            <div className="mt-3 flex gap-2 text-xs">
-              <button type="button" onClick={() => startEditBudget(item)} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
-                {messages.financial.edit}
-              </button>
-              <button type="button" onClick={() => void handleDeleteBudget(item.id)} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
-                {messages.financial.delete}
-              </button>
-            </div>
-          </article>
-        ))}
-      </section>
-
-      <form onSubmit={handleSubmitExpense} className="ui-card space-y-4 p-5">
+        <form onSubmit={handleSubmitExpense} className="ui-card space-y-4 p-5">
         <h2 className="text-lg font-semibold">{messages.financial.createExpenseSection}</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <select
           value={expenseForm.budgetId}
           onChange={(event) => setExpenseForm((current) => ({ ...current, budgetId: event.target.value }))}
-          className="ui-input w-full"
+          className="ui-input min-w-0 w-full"
           required
         >
           {budgets.map((budget) => (
@@ -377,9 +359,10 @@ export function FinancialManager() {
           value={expenseForm.name}
           onChange={(event) => setExpenseForm((current) => ({ ...current, name: event.target.value }))}
           placeholder={messages.financial.name}
-          className="ui-input w-full"
+          className="ui-input min-w-0 w-full"
           required
         />
+        </div>
         <input
           type="number"
           min="0"
@@ -396,13 +379,14 @@ export function FinancialManager() {
           placeholder={messages.financial.description}
           className="ui-input w-full"
         />
+        <div className="flex flex-wrap items-center gap-3">
         <input
           type="color"
           value={expenseForm.color}
           onChange={(event) => setExpenseForm((current) => ({ ...current, color: event.target.value }))}
-          className="h-12 w-24 rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-1"
+          className="h-12 w-24 shrink-0 rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-1"
         />
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button disabled={saving} className="ui-button-primary">
             {editingExpenseId ? messages.financial.updateExpense : messages.financial.addExpense}
           </button>
@@ -419,12 +403,36 @@ export function FinancialManager() {
             </button>
           ) : null}
         </div>
-      </form>
+        </div>
+        </form>
+      </div>
+
+      <section className="ui-card space-y-3 p-5">
+        <h3 className="text-base font-semibold">{messages.financial.listBudgetSection}</h3>
+        {budgets.length === 0 ? <p className="ui-muted text-sm">{messages.financial.emptyBudgets}</p> : null}
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+          {budgets.map((item) => (
+          <article key={item.id} className="rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-4 text-sm">
+            <p className="font-semibold">{item.name}</p>
+            <p className="ui-muted text-xs">{item.amount.toFixed(2)}</p>
+            <div className="mt-3 flex gap-2 text-xs">
+              <button type="button" onClick={() => startEditBudget(item)} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
+                {messages.financial.edit}
+              </button>
+              <button type="button" onClick={() => void handleDeleteBudget(item.id)} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
+                {messages.financial.delete}
+              </button>
+            </div>
+          </article>
+          ))}
+        </div>
+      </section>
 
       <section className="ui-card space-y-3 p-5">
         <h3 className="text-base font-semibold">{messages.financial.listExpenseSection}</h3>
         {expenses.length === 0 ? <p className="ui-muted text-sm">{messages.financial.emptyExpenses}</p> : null}
-        {expenses.map((item) => (
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+          {expenses.map((item) => (
           <article key={item.id} className="rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-4 text-sm">
             <p className="font-semibold">{item.name}</p>
             <p className="ui-muted text-xs">{budgetMap.get(item.budgetId)?.name ?? "-"}</p>
@@ -439,6 +447,7 @@ export function FinancialManager() {
             </div>
           </article>
         ))}
+        </div>
       </section>
     </section>
   );

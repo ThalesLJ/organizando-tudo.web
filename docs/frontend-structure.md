@@ -60,6 +60,7 @@ Constraints:
 - Language switcher rendering is client-only to avoid hydration mismatch caused by browser extensions or antivirus DOM injection and uses the same theme visual style as authentication inputs
 - Notes editor page uses TipTap rich text editor in client components
 - Runtime user preferences loader applies locale and colors globally on app load
+- Full-page async loading states use the shared `AppLoading` component: `position: absolute` within `inset-0` relative to the private layout content panel (below the navbar), centered label, `select-none`, background `var(--bg-primary)`; the private shell uses a flex column so `main` and the inner `ui-panel` grow with `flex-1` / `min-height: 0` and `position: relative` so the overlay does not cover the header. Public note view wraps loading in a `relative min-h-screen` container so the same absolute overlay fills only that page body
 
 ---
 

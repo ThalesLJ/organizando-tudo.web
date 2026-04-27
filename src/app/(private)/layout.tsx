@@ -30,8 +30,8 @@ export default async function PrivateLayout({
     : undefined;
 
   return (
-    <div className="ui-shell" style={style}>
-      <header className="border-b border-[var(--header-background)] bg-[var(--header-background)] px-4 py-4 text-sm text-[var(--header-text)]">
+    <div className="ui-shell flex min-h-screen flex-col" style={style}>
+      <header className="shrink-0 border-b border-[var(--header-background)] bg-[var(--header-background)] px-4 py-4 text-sm text-[var(--header-text)]">
         <nav className="mx-auto flex w-full max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm">
             <span className="select-none rounded-lg border border-[var(--header-text)] bg-transparent px-3 py-2 font-medium">{user.username}</span>
@@ -51,8 +51,8 @@ export default async function PrivateLayout({
           <LogoutButton label={m.nav.logout} />
         </nav>
       </header>
-      <main className="mx-auto w-full max-w-6xl px-4 py-6">
-        <div className="ui-panel p-5 sm:p-6">{children}</div>
+      <main className="relative mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col px-4 py-6">
+        <div className="ui-panel relative flex min-h-0 flex-1 flex-col p-5 sm:p-6">{children}</div>
       </main>
     </div>
   );

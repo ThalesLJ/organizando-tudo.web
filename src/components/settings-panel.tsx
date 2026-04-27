@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { AppLoading } from "@/components/app-loading";
 import { useRouter } from "next/navigation";
 import { AppLocale } from "@/lib/messages";
 import { useLocaleMessages, writeLocale } from "@/lib/locale-client";
@@ -248,6 +249,10 @@ export function SettingsPanel() {
     }
   }
 
+  if (isLoading) {
+    return <AppLoading label={messages.settings.loading} />;
+  }
+
   const colorFields: Array<{ key: keyof ColorsPayload; label: string }> = [
     { key: "backgroundPrimary", label: messages.settings.backgroundPrimary },
     { key: "backgroundSecondary", label: messages.settings.backgroundSecondary },
@@ -264,13 +269,12 @@ export function SettingsPanel() {
   ];
 
   return (
-    <section className="space-y-5">
+    <section className="settings-page space-y-5">
       <div>
         <h1 className="text-2xl font-bold tracking-[-0.02em]">{messages.settings.title}</h1>
         <p className="ui-muted select-none text-sm">{messages.settings.subtitle}</p>
       </div>
 
-      {isLoading ? <p className="ui-muted text-sm">{messages.settings.loading}</p> : null}
       {error ? <p className="ui-error">{error}</p> : null}
       {message ? <p className="ui-success">{message}</p> : null}
 

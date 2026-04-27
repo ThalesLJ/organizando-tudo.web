@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { AppLoading } from "@/components/app-loading";
 import { useLocaleMessages } from "@/lib/locale-client";
 
 type BudgetItem = {
@@ -111,11 +112,7 @@ export function DashboardFinancial() {
   }, [budgetMap, expenses]);
 
   if (loading) {
-    return (
-      <section className="private-floating-page">
-        <p className="ui-muted text-sm">{messages.financial.loading}</p>
-      </section>
-    );
+    return <AppLoading label={messages.financial.loading} />;
   }
 
   if (error) {

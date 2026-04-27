@@ -199,12 +199,18 @@ input[type="color"] {
 }
 
 .ui-panel:has(.notes-floating-page),
-.ui-panel:has(.private-floating-page) {
+.ui-panel:has(.private-floating-page),
+.ui-panel:has(.app-loading-overlay) {
   border: none !important;
   background: transparent !important;
   padding: 0 !important;
   border-radius: 0 !important;
   box-shadow: none !important;
+}
+
+.ui-panel:has(.settings-page) {
+  flex: 0 1 auto !important;
+  width: 100%;
 }
 
 .ProseMirror p {

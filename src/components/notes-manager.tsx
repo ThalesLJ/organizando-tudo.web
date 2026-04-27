@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { AppLoading } from "@/components/app-loading";
 import { useLocaleMessages } from "@/lib/locale-client";
 
 type NoteItem = {
@@ -196,6 +197,10 @@ export function NotesManager() {
     return trimmedContent;
   }
 
+  if (isLoading) {
+    return <AppLoading label={messages.notes.loading} />;
+  }
+
   return (
     <section className="notes-floating-page -mx-2 space-y-5 sm:-mx-8">
       <div className="ui-card space-y-4 p-5">
@@ -243,8 +248,7 @@ export function NotesManager() {
       </div>
 
       {error ? <p className="ui-error">{error}</p> : null}
-      {isLoading ? <p className="ui-muted text-sm">{messages.notes.loading}</p> : null}
-      {!isLoading && filteredNotes.length === 0 ? <p className="ui-muted text-sm">{messages.notes.empty}</p> : null}
+      {!filteredNotes.length ? <p className="ui-muted text-sm">{messages.notes.empty}</p> : null}
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {filteredNotes.map((note) => (

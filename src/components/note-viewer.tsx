@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaChevronLeft } from "react-icons/fa";
+import { AppLoading } from "@/components/app-loading";
 import { useLocaleMessages } from "@/lib/locale-client";
 
 type NoteResponse = {
@@ -62,9 +63,9 @@ export function NoteViewer({ noteId }: NoteViewerProps) {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen w-full bg-[var(--bg-primary)] px-4 py-6 text-[var(--text-primary)]">
-        <p className="ui-muted text-sm">{messages.viewer.loading}</p>
-      </main>
+      <div className="relative min-h-screen w-full">
+        <AppLoading label={messages.viewer.loading} />
+      </div>
     );
   }
 
