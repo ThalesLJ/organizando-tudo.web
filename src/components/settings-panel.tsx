@@ -69,7 +69,7 @@ const DEFAULT_COLORS: ColorsPayload = {
   secondaryButtonText: "#946a56",
   languageSwitcherBackground: "#ffffff",
   languageSwitcherText: "#5c4033",
-  languageSwitcherBorder: "#946a56",
+  languageSwitcherBorder: "#ffffff",
 };
 
 const DARK_MODE_COLORS: ColorsPayload = {
@@ -87,7 +87,7 @@ const DARK_MODE_COLORS: ColorsPayload = {
   secondaryButtonText: "#ebe2d9",
   languageSwitcherBackground: "#362f28",
   languageSwitcherText: "#ebe2d9",
-  languageSwitcherBorder: "#8a7668",
+  languageSwitcherBorder: "#392f28",
 };
 
 function applyColors(colors: Partial<ColorsPayload>) {

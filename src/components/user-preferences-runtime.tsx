@@ -66,7 +66,7 @@ function applyColors(colors?: {
   root.style.setProperty("--secondary-button-text", colors?.secondaryButtonText ?? "#946a56");
   root.style.setProperty("--language-switcher-background", colors?.languageSwitcherBackground ?? "#ffffff");
   root.style.setProperty("--language-switcher-text", colors?.languageSwitcherText ?? "#5c4033");
-  root.style.setProperty("--language-switcher-border", colors?.languageSwitcherBorder ?? "#946a56");
+  root.style.setProperty("--language-switcher-border", colors?.languageSwitcherBorder ?? "#ffffff");
 }
 
 export function UserPreferencesRuntime() {

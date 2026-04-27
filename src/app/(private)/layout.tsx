@@ -28,7 +28,7 @@ export default async function PrivateLayout({
         ["--secondary-button-text" as string]: colors.secondaryButtonText ?? "#946a56",
         ["--language-switcher-background" as string]: colors.languageSwitcherBackground ?? "#ffffff",
         ["--language-switcher-text" as string]: colors.languageSwitcherText ?? "#5c4033",
-        ["--language-switcher-border" as string]: colors.languageSwitcherBorder ?? "#946a56",
+        ["--language-switcher-border" as string]: colors.languageSwitcherBorder ?? "#ffffff",
       }
     : undefined;
 
