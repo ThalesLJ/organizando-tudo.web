@@ -3,6 +3,21 @@ import { NextResponse } from "next/server";
 import { authConfig } from "@/lib/auth-config";
 import { getExternalUserApiUrl } from "@/lib/external-api";
 
+type UserColors = {
+  backgroundPrimary?: string;
+  backgroundSecondary?: string;
+  textPrimary?: string;
+  textSecondary?: string;
+  borderColor?: string;
+  inputBackground?: string;
+  headerBackground?: string;
+  headerText?: string;
+  primaryButtonBackground?: string;
+  primaryButtonText?: string;
+  secondaryButtonBackground?: string;
+  secondaryButtonText?: string;
+};
+
 type ExternalUserApiResponse = {
   success?: boolean;
   data?: {
@@ -10,12 +25,7 @@ type ExternalUserApiResponse = {
     email?: string;
     preferences?: {
       language?: string;
-      colors?: {
-        backgroundPrimary?: string;
-        backgroundSecondary?: string;
-        textPrimary?: string;
-        textSecondary?: string;
-      } | null;
+      colors?: UserColors | null;
     };
   };
   user?: {
@@ -23,24 +33,14 @@ type ExternalUserApiResponse = {
     email?: string;
     preferences?: {
       language?: string;
-      colors?: {
-        backgroundPrimary?: string;
-        backgroundSecondary?: string;
-        textPrimary?: string;
-        textSecondary?: string;
-      } | null;
+      colors?: UserColors | null;
     };
   };
   username?: string;
   email?: string;
   preferences?: {
     language?: string;
-    colors?: {
-      backgroundPrimary?: string;
-      backgroundSecondary?: string;
-      textPrimary?: string;
-      textSecondary?: string;
-    } | null;
+    colors?: UserColors | null;
   };
 };
 

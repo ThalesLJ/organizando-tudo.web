@@ -13,9 +13,32 @@ type NoteItem = {
   updatedAt: string;
 };
 
-function formatDate(value: string): string {
+function padDatePart(value: number): string {
+  return String(value).padStart(2, "0");
+}
+
+function formatDate(value: string, locale: string): string {
   try {
-    return new Date(value).toLocaleString();
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    const year = date.getFullYear();
+    const month = padDatePart(date.getMonth() + 1);
+    const day = padDatePart(date.getDate());
+    const hours24 = padDatePart(date.getHours());
+    const minutes = padDatePart(date.getMinutes());
+    const seconds = padDatePart(date.getSeconds());
+
+    if (locale === "pt") {
+      return `${day}/${month}/${year} ${hours24}:${minutes}:${seconds}`;
+    }
+
+    const period = date.getHours() >= 12 ? "PM" : "AM";
+    const hours12Value = date.getHours() % 12 || 12;
+    const hours12 = padDatePart(hours12Value);
+    return `${year}/${month}/${day} ${hours12}:${minutes}:${seconds} ${period}`;
   } catch {
     return value;
   }
@@ -44,7 +67,7 @@ function stripHtml(value: string): string {
 }
 
 export function NotesManager() {
-  const { messages } = useLocaleMessages();
+  const { locale, messages } = useLocaleMessages();
   const [notes, setNotes] = useState<NoteItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -163,51 +186,53 @@ export function NotesManager() {
 
   function getPreviewContent(note: NoteItem): string {
     if (!note.isPublic) {
-      return `<div class="text-center text-xs text-zinc-500">🔒 ${messages.notes.privateContent}</div>`;
+      return `<div class="note-private-content text-center text-xs text-[var(--text-secondary)]">🔒 ${messages.notes.privateContent}</div>`;
     }
 
     const trimmedContent = note.content.trim();
     if (!trimmedContent) {
-      return `<div class="text-center text-xs text-zinc-500">${messages.notes.noContent}</div>`;
+      return `<div class="note-private-content text-center text-xs text-[var(--text-secondary)]">${messages.notes.noContent}</div>`;
     }
     return trimmedContent;
   }
 
   return (
-    <section className="space-y-3">
-      <div className="space-y-3 rounded-md border border-zinc-300/40 bg-[var(--bg-primary)] p-3">
+    <section className="notes-floating-page -mx-2 space-y-5 sm:-mx-8">
+      <div className="ui-card space-y-4 p-5">
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder={messages.notes.searchPlaceholder}
-          className="w-full rounded border border-zinc-300/50 bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none"
+          className="ui-input w-full"
         />
-        <div className="flex flex-wrap items-center gap-2 text-xs">
-          <button
-            type="button"
-            onClick={() => setVisibilityFilter("all")}
-            className={`rounded border px-2 py-1 ${visibilityFilter === "all" ? "border-zinc-700 bg-zinc-700 text-white" : "border-zinc-300/50 bg-[var(--bg-secondary)] text-[var(--text-primary)]"}`}
-          >
-            {messages.notes.all}
-          </button>
-          <button
-            type="button"
-            onClick={() => setVisibilityFilter("public")}
-            className={`rounded border px-2 py-1 ${visibilityFilter === "public" ? "border-zinc-700 bg-zinc-700 text-white" : "border-zinc-300/50 bg-[var(--bg-secondary)] text-[var(--text-primary)]"}`}
-          >
-            {messages.notes.public}
-          </button>
-          <button
-            type="button"
-            onClick={() => setVisibilityFilter("private")}
-            className={`rounded border px-2 py-1 ${visibilityFilter === "private" ? "border-zinc-700 bg-zinc-700 text-white" : "border-zinc-300/50 bg-[var(--bg-secondary)] text-[var(--text-primary)]"}`}
-          >
-            {messages.notes.private}
-          </button>
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setVisibilityFilter("all")}
+              className={`rounded-lg border px-3 py-2 transition ${visibilityFilter === "all" ? "border-[var(--primary-button-background)] bg-[var(--primary-button-background)] text-[var(--primary-button-text)]" : "border-[var(--border-color)] bg-[var(--secondary-button-background)] text-[var(--secondary-button-text)] hover:opacity-80"}`}
+            >
+              {messages.notes.all}
+            </button>
+            <button
+              type="button"
+              onClick={() => setVisibilityFilter("public")}
+              className={`rounded-lg border px-3 py-2 transition ${visibilityFilter === "public" ? "border-[var(--primary-button-background)] bg-[var(--primary-button-background)] text-[var(--primary-button-text)]" : "border-[var(--border-color)] bg-[var(--secondary-button-background)] text-[var(--secondary-button-text)] hover:opacity-80"}`}
+            >
+              {messages.notes.public}
+            </button>
+            <button
+              type="button"
+              onClick={() => setVisibilityFilter("private")}
+              className={`rounded-lg border px-3 py-2 transition ${visibilityFilter === "private" ? "border-[var(--primary-button-background)] bg-[var(--primary-button-background)] text-[var(--primary-button-text)]" : "border-[var(--border-color)] bg-[var(--secondary-button-background)] text-[var(--secondary-button-text)] hover:opacity-80"}`}
+            >
+              {messages.notes.private}
+            </button>
+          </div>
           <select
             value={sortBy}
             onChange={(event) => setSortBy(event.target.value as typeof sortBy)}
-            className="rounded border border-zinc-300/50 bg-[var(--bg-secondary)] px-2 py-1 text-[var(--text-primary)]"
+            className="ui-input px-3 py-2"
           >
             <option value="date-desc">{messages.notes.sortDateDesc}</option>
             <option value="date-asc">{messages.notes.sortDateAsc}</option>
@@ -217,32 +242,32 @@ export function NotesManager() {
         </div>
       </div>
 
-      {error ? <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
-      {isLoading ? <p className="text-sm text-[var(--text-secondary)]">{messages.notes.loading}</p> : null}
-      {!isLoading && filteredNotes.length === 0 ? <p className="text-sm text-[var(--text-secondary)]">{messages.notes.empty}</p> : null}
+      {error ? <p className="ui-error">{error}</p> : null}
+      {isLoading ? <p className="ui-muted text-sm">{messages.notes.loading}</p> : null}
+      {!isLoading && filteredNotes.length === 0 ? <p className="ui-muted text-sm">{messages.notes.empty}</p> : null}
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {filteredNotes.map((note) => (
-          <article key={note.id} className="rounded-md border border-zinc-300/40 bg-[var(--bg-secondary)] p-2 text-[var(--text-primary)]">
-            <h3 className="border-b border-zinc-300/40 pb-1 text-sm font-semibold">{note.title}</h3>
+          <article key={note.id} className="ui-card p-4">
+            <h3 className="border-b border-[var(--border-color)] pb-2 text-[15px] font-semibold">{note.title}</h3>
             <div
-              className={`mt-2 h-28 overflow-hidden rounded border border-zinc-300/40 bg-[var(--bg-primary)] p-2 text-xs ${!note.isPublic ? "opacity-70" : ""}`}
+              className={`mt-3 h-[142px] rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-3 text-[13px] ${note.isPublic ? "note-public-content note-scrollbar overflow-y-auto overflow-x-hidden" : "note-private-content flex items-center justify-center overflow-hidden opacity-70"}`}
               dangerouslySetInnerHTML={{ __html: getPreviewContent(note) }}
             />
-            <div className="mt-2 flex items-center justify-between text-[11px] text-[var(--text-secondary)]">
-              <span>{formatDate(note.updatedAt)}</span>
+            <div className="mt-3 flex items-center justify-between text-xs text-[var(--text-secondary)]">
+              <span>{formatDate(note.updatedAt, locale)}</span>
               <div className="flex gap-2">
-                <Link href={`/view-note/${note.id}`} className="underline">
+                <Link href={`/view-note/${note.id}`} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
                   {messages.notes.view}
                 </Link>
-                <Link href={`/edit-note/${note.id}`} className="underline">
+                <Link href={`/edit-note/${note.id}`} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
                   {messages.notes.edit}
                 </Link>
                 <button
                   type="button"
                   disabled={isDeleting}
                   onClick={() => void handleDelete(note.id)}
-                  className="underline disabled:opacity-60"
+                  className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)] disabled:opacity-60"
                 >
                   {messages.notes.delete}
                 </button>
@@ -254,7 +279,7 @@ export function NotesManager() {
 
       <Link
         href="/add-note/new"
-        className="fixed bottom-6 right-6 flex h-11 w-11 items-center justify-center rounded-full border border-zinc-300/50 bg-[var(--bg-secondary)] text-3xl leading-none text-[var(--text-primary)] shadow-md"
+        className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--primary-button-background)] bg-[var(--primary-button-background)] text-3xl leading-none text-[var(--primary-button-text)] shadow-2xl transition hover:opacity-90"
       >
         +
       </Link>

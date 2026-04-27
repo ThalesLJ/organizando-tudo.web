@@ -111,50 +111,58 @@ export function DashboardFinancial() {
   }, [budgetMap, expenses]);
 
   if (loading) {
-    return <p className="text-sm text-[var(--text-secondary)]">{messages.financial.loading}</p>;
+    return (
+      <section className="private-floating-page">
+        <p className="ui-muted text-sm">{messages.financial.loading}</p>
+      </section>
+    );
   }
 
   if (error) {
-    return <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>;
+    return (
+      <section className="private-floating-page">
+        <p className="ui-error">{error}</p>
+      </section>
+    );
   }
 
   return (
-    <section className="mx-auto w-full max-w-6xl space-y-6">
+    <section className="private-floating-page mx-auto w-full max-w-6xl space-y-6">
       <div className="space-y-3">
-        <h1 className="text-center text-sm font-semibold">{messages.financial.summaryTitle}</h1>
+        <h1 className="text-center text-2xl font-bold tracking-[-0.02em]">{messages.financial.summaryTitle}</h1>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          <article className="rounded border border-zinc-300/40 bg-[var(--bg-secondary)] p-4 text-center">
+          <article className="ui-card p-5 text-center">
             <strong className="text-2xl">{summary.totalBudget.toFixed(0)}</strong>
-            <p className="text-xs text-[var(--text-secondary)]">{messages.financial.totalBudget}</p>
+            <p className="ui-muted text-xs">{messages.financial.totalBudget}</p>
           </article>
-          <article className="rounded border border-zinc-300/40 bg-[var(--bg-secondary)] p-4 text-center">
+          <article className="ui-card p-5 text-center">
             <strong className="text-2xl">{summary.totalSpent.toFixed(0)}</strong>
-            <p className="text-xs text-[var(--text-secondary)]">{messages.financial.totalSpent}</p>
+            <p className="ui-muted text-xs">{messages.financial.totalSpent}</p>
           </article>
-          <article className="rounded border border-zinc-300/40 bg-[var(--bg-secondary)] p-4 text-center">
+          <article className="ui-card p-5 text-center">
             <strong className="text-2xl">{summary.totalRemaining.toFixed(0)}</strong>
-            <p className="text-xs text-[var(--text-secondary)]">{messages.financial.totalRemaining}</p>
+            <p className="ui-muted text-xs">{messages.financial.totalRemaining}</p>
           </article>
         </div>
       </div>
 
       <div className="space-y-3">
-        <h2 className="text-center text-sm font-semibold">{messages.financial.budgetOverview}</h2>
+        <h2 className="text-center text-lg font-semibold">{messages.financial.budgetOverview}</h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {budgetOverview.map((budget) => (
-            <article key={budget.id} className="rounded border border-zinc-300/40 bg-[var(--bg-secondary)] p-3">
+            <article key={budget.id} className="ui-card p-4">
               <div className="flex items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: budget.color }} />
                 <h3 className="text-sm font-semibold">{budget.name}</h3>
               </div>
               <p className="mt-2 text-2xl font-bold">{budget.amount.toFixed(0)}</p>
-              <p className="text-xs text-[var(--text-secondary)]">{messages.financial.totalBudget}</p>
+              <p className="ui-muted text-xs">{messages.financial.totalBudget}</p>
               <div className="mt-2 flex items-center justify-between text-xs">
-                <span className="text-[var(--text-secondary)]">{messages.financial.totalSpent}</span>
+                <span className="ui-muted">{messages.financial.totalSpent}</span>
                 <span>{budget.spent.toFixed(0)} / {budget.amount.toFixed(0)}</span>
               </div>
               <div className="mt-1 flex items-center justify-between text-xs">
-                <span className="text-[var(--text-secondary)]">{messages.financial.totalRemaining}</span>
+                <span className="ui-muted">{messages.financial.totalRemaining}</span>
                 <span>{budget.remaining.toFixed(0)}</span>
               </div>
             </article>
@@ -163,13 +171,13 @@ export function DashboardFinancial() {
       </div>
 
       <div className="space-y-3">
-        <h2 className="text-center text-sm font-semibold">{messages.financial.expensesByCategory}</h2>
+        <h2 className="text-center text-lg font-semibold">{messages.financial.expensesByCategory}</h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {expensesWithCategory.map((expense) => (
-            <article key={expense.id} className="rounded border border-zinc-300/40 bg-[var(--bg-secondary)] p-3">
+            <article key={expense.id} className="ui-card p-4">
               <h3 className="text-sm font-semibold">{expense.name}</h3>
-              <p className="text-xs text-[var(--text-secondary)]">{expense.budget?.name ?? "-"}</p>
-              <p className="mt-1 text-xs text-[var(--text-secondary)]">{expense.description || messages.financial.noDescription}</p>
+              <p className="ui-muted text-xs">{expense.budget?.name ?? "-"}</p>
+              <p className="ui-muted mt-1 text-xs">{expense.description || messages.financial.noDescription}</p>
               <p className="mt-3 text-2xl font-bold">{expense.amount.toFixed(0)}</p>
             </article>
           ))}

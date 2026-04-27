@@ -14,37 +14,45 @@ export default async function PrivateLayout({
   const colors = user.preferences?.colors;
   const style = colors
     ? {
-        ["--bg-primary" as string]: colors.backgroundPrimary ?? "#f8fafc",
-        ["--bg-secondary" as string]: colors.backgroundSecondary ?? "#ffffff",
-        ["--text-primary" as string]: colors.textPrimary ?? "#18181b",
-        ["--text-secondary" as string]: colors.textSecondary ?? "#52525b",
+        ["--bg-primary" as string]: colors.backgroundPrimary ?? "#ffe3d5",
+        ["--bg-secondary" as string]: colors.backgroundSecondary ?? "#00000000",
+        ["--text-primary" as string]: colors.textPrimary ?? "#946a56",
+        ["--text-secondary" as string]: colors.textSecondary ?? "#946a56",
+        ["--border-color" as string]: colors.borderColor ?? "#946a56",
+        ["--input-background" as string]: colors.inputBackground ?? "#00000000",
+        ["--header-background" as string]: colors.headerBackground ?? "#946a56",
+        ["--header-text" as string]: colors.headerText ?? "#ffffff",
+        ["--primary-button-background" as string]: colors.primaryButtonBackground ?? "#946a56",
+        ["--primary-button-text" as string]: colors.primaryButtonText ?? "#ffffff",
+        ["--secondary-button-background" as string]: colors.secondaryButtonBackground ?? "#00000000",
+        ["--secondary-button-text" as string]: colors.secondaryButtonText ?? "#946a56",
       }
     : undefined;
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]" style={style}>
-      <header className="bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] border-b border-zinc-300/40">
-        <nav className="mx-auto flex w-full max-w-6xl items-center justify-between">
-          <div className="flex items-center gap-5 text-xs sm:text-sm">
-            <span>{user.username}</span>
-            <Link href="/dashboard" className="hover:underline">
+    <div className="ui-shell" style={style}>
+      <header className="border-b border-[var(--header-background)] bg-[var(--header-background)] px-4 py-4 text-sm text-[var(--header-text)]">
+        <nav className="mx-auto flex w-full max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm">
+            <span className="select-none rounded-lg border border-[var(--header-text)] bg-transparent px-3 py-2 font-medium">{user.username}</span>
+            <Link href="/dashboard" className="text-[var(--header-text)] transition hover:opacity-80">
               {m.nav.dashboard}
             </Link>
-            <Link href="/financial" className="hover:underline">
+            <Link href="/financial" className="text-[var(--header-text)] transition hover:opacity-80">
               {m.nav.financial}
             </Link>
-            <Link href="/notes" className="hover:underline">
+            <Link href="/notes" className="text-[var(--header-text)] transition hover:opacity-80">
               {m.nav.notes}
             </Link>
-            <Link href="/settings" className="hover:underline">
+            <Link href="/settings" className="text-[var(--header-text)] transition hover:opacity-80">
               {m.nav.settings}
             </Link>
           </div>
           <LogoutButton label={m.nav.logout} />
         </nav>
       </header>
-      <main className="mx-auto w-full max-w-6xl px-3 py-4">
-        <div className="rounded-md border border-zinc-300/40 bg-[var(--bg-secondary)] p-3 text-[var(--text-primary)]">{children}</div>
+      <main className="mx-auto w-full max-w-6xl px-4 py-6">
+        <div className="ui-panel p-5 sm:p-6">{children}</div>
       </main>
     </div>
   );

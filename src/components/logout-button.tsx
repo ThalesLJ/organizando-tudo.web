@@ -23,7 +23,7 @@ export function LogoutButton({ label }: LogoutButtonProps) {
       type="button"
       onClick={handleLogout}
       disabled={loading}
-      className="bg-transparent p-0 text-xs text-[var(--text-primary)] underline-offset-2 hover:underline disabled:opacity-60"
+      className="w-fit cursor-pointer border-0 bg-transparent p-0 text-left text-xs text-[var(--header-text)] transition hover:opacity-80 disabled:opacity-60 sm:text-sm"
       title={label}
     >
       {loading ? "..." : label}

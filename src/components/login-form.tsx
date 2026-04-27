@@ -76,7 +76,7 @@ export function LoginForm({ copy }: LoginFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-4">
-        <label htmlFor="identifier" className="text-xs font-medium text-white">
+        <label htmlFor="identifier" className="text-xs font-medium text-[var(--text-primary)]">
           {copy.identifierLabel}
         </label>
         <input
@@ -86,11 +86,11 @@ export function LoginForm({ copy }: LoginFormProps) {
           type="text"
           required
           placeholder={copy.identifierPlaceholder}
-          className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
+          className="ui-input h-14 w-full"
         />
       </div>
       <div className="space-y-4">
-        <label htmlFor="password" className="text-xs font-medium text-white">
+        <label htmlFor="password" className="text-xs font-medium text-[var(--text-primary)]">
           {copy.passwordLabel}
         </label>
         <input
@@ -100,33 +100,33 @@ export function LoginForm({ copy }: LoginFormProps) {
           type="password"
           required
           placeholder={copy.passwordPlaceholder}
-          className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
+          className="ui-input h-14 w-full"
         />
       </div>
-      <label className="flex items-center gap-2 text-xs text-white/70">
+      <label className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
         <input
           type="checkbox"
           name="keepLoggedIn"
-          className="h-4 w-4 rounded border border-white/30 bg-transparent accent-white"
+          className="h-4 w-4 rounded border border-[var(--border-color)] bg-transparent accent-[var(--primary-button-background)]"
         />
         {copy.keepSignedIn}
       </label>
-      {error ? <p className="text-xs text-white">{error}</p> : null}
+      {error ? <p className="select-none text-xs text-[var(--text-primary)]">{error}</p> : null}
       <button
         type="submit"
         disabled={loading}
-        className="h-12 w-full rounded-lg border border-white bg-white px-4 text-sm font-bold text-black transition hover:bg-white/90 disabled:opacity-60"
+        className="ui-button-primary h-12 w-full"
       >
         {loading ? copy.submitting : copy.submit}
       </button>
-      <div className="pt-1 text-center text-xs leading-none">
-        <Link href="/recover" className="text-white/70 transition hover:text-white">
+      <div className="select-none pt-1 text-center text-xs leading-none">
+        <Link href="/recover" className="font-bold text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
           {copy.forgotPassword}
         </Link>
       </div>
-      <p className="text-center text-xs leading-none text-white/60">
+      <p className="select-none text-center text-xs leading-none text-[var(--text-secondary)]">
         {copy.noAccount}{" "}
-        <Link href="/register" className="font-semibold text-white/85 transition hover:text-white">
+        <Link href="/register" className="font-bold text-[var(--text-primary)] transition hover:opacity-80">
           {copy.createAccount}
         </Link>
       </p>

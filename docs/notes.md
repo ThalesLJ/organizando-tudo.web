@@ -39,6 +39,11 @@ Each list item must show:
 - Updated date
 - Quick actions (View, Edit, Delete)
 
+Updated date format:
+
+- Portuguese: `dd/MM/yyyy HH:mm:ss` using 24-hour time
+- Other languages: `yyyy/MM/dd hh:mm:ss AM/PM` using 12-hour time
+
 ---
 
 ## 3) Available Actions

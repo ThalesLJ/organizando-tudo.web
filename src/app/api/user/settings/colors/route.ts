@@ -10,6 +10,14 @@ type UpdateColorsPayload = {
   backgroundSecondary?: string;
   textPrimary?: string;
   textSecondary?: string;
+  borderColor?: string;
+  inputBackground?: string;
+  headerBackground?: string;
+  headerText?: string;
+  primaryButtonBackground?: string;
+  primaryButtonText?: string;
+  secondaryButtonBackground?: string;
+  secondaryButtonText?: string;
 };
 
 function getErrorMessage(error: unknown, fallback: string): string {

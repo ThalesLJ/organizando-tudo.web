@@ -14,6 +14,14 @@ type UserPreferencesResponse = {
         backgroundSecondary?: string;
         textPrimary?: string;
         textSecondary?: string;
+        borderColor?: string;
+        inputBackground?: string;
+        headerBackground?: string;
+        headerText?: string;
+        primaryButtonBackground?: string;
+        primaryButtonText?: string;
+        secondaryButtonBackground?: string;
+        secondaryButtonText?: string;
       } | null;
     } | null;
   };
@@ -24,16 +32,32 @@ function applyColors(colors?: {
   backgroundSecondary?: string;
   textPrimary?: string;
   textSecondary?: string;
+  borderColor?: string;
+  inputBackground?: string;
+  headerBackground?: string;
+  headerText?: string;
+  primaryButtonBackground?: string;
+  primaryButtonText?: string;
+  secondaryButtonBackground?: string;
+  secondaryButtonText?: string;
 } | null) {
   if (typeof document === "undefined") {
     return;
   }
 
   const root = document.documentElement;
-  root.style.setProperty("--bg-primary", colors?.backgroundPrimary ?? "#f8fafc");
-  root.style.setProperty("--bg-secondary", colors?.backgroundSecondary ?? "#ffffff");
-  root.style.setProperty("--text-primary", colors?.textPrimary ?? "#18181b");
-  root.style.setProperty("--text-secondary", colors?.textSecondary ?? "#52525b");
+  root.style.setProperty("--bg-primary", colors?.backgroundPrimary ?? "#ffe3d5");
+  root.style.setProperty("--bg-secondary", colors?.backgroundSecondary ?? "#00000000");
+  root.style.setProperty("--text-primary", colors?.textPrimary ?? "#946a56");
+  root.style.setProperty("--text-secondary", colors?.textSecondary ?? "#946a56");
+  root.style.setProperty("--border-color", colors?.borderColor ?? "#946a56");
+  root.style.setProperty("--input-background", colors?.inputBackground ?? "#00000000");
+  root.style.setProperty("--header-background", colors?.headerBackground ?? "#946a56");
+  root.style.setProperty("--header-text", colors?.headerText ?? "#ffffff");
+  root.style.setProperty("--primary-button-background", colors?.primaryButtonBackground ?? "#946a56");
+  root.style.setProperty("--primary-button-text", colors?.primaryButtonText ?? "#ffffff");
+  root.style.setProperty("--secondary-button-background", colors?.secondaryButtonBackground ?? "#00000000");
+  root.style.setProperty("--secondary-button-text", colors?.secondaryButtonText ?? "#946a56");
 }
 
 export function UserPreferencesRuntime() {

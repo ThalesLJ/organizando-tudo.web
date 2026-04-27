@@ -10,10 +10,18 @@ Add a "colors" object inside user document:
 
 ```json
 "colors": {
-  "backgroundPrimary": "#000000",
-  "backgroundSecondary": "#111111",
-  "textPrimary": "#ffffff",
-  "textSecondary": "#cccccc"
+  "backgroundPrimary": "#ffe3d5",
+  "backgroundSecondary": "#00000000",
+  "textPrimary": "#946a56",
+  "textSecondary": "#946a56",
+  "borderColor": "#946a56",
+  "inputBackground": "#00000000",
+  "headerBackground": "#946a56",
+  "headerText": "#ffffff",
+  "primaryButtonBackground": "#946a56",
+  "primaryButtonText": "#ffffff",
+  "secondaryButtonBackground": "#00000000",
+  "secondaryButtonText": "#946a56"
 }
 ```
 
@@ -31,6 +39,14 @@ User must be able to:
   - secondary background color
   - primary text color
   - secondary text color
+  - border and outline color
+  - input background color
+  - header background color
+  - header text color
+  - primary button background color
+  - primary button text color
+  - secondary button background color
+  - secondary button text color
 
 ---
 
@@ -43,10 +59,18 @@ Example:
 
 ```css
 :root {
-  --bg-primary: #000;
-  --bg-secondary: #111;
-  --text-primary: #fff;
-  --text-secondary: #ccc;
+  --bg-primary: #ffe3d5;
+  --bg-secondary: #00000000;
+  --text-primary: #946a56;
+  --text-secondary: #946a56;
+  --border-color: #946a56;
+  --input-background: #00000000;
+  --header-background: #946a56;
+  --header-text: #fff;
+  --primary-button-background: #946a56;
+  --primary-button-text: #fff;
+  --secondary-button-background: #00000000;
+  --secondary-button-text: #946a56;
 }
 ```
 
@@ -59,7 +83,8 @@ Example:
   - Apply colors dynamically
 - Runtime loader: `UserPreferencesRuntime` (frontend)
 - Variables are applied to `:root` and consumed by layouts/components
-- Global controls like language switcher, logout button, back arrow and floating add button must also consume theme variables
+- Default frontend controls follow the legacy peach and brown visual system
+- Four color fields are not enough for full customization because header, borders, inputs and button text/background require independent labels
 
 ---
 

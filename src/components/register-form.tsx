@@ -60,7 +60,7 @@ export function RegisterForm({ copy }: RegisterFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-4">
-        <label htmlFor="username" className="text-xs font-medium text-white">
+        <label htmlFor="username" className="text-xs font-medium text-[var(--text-primary)]">
           {copy.firstNameLabel}
         </label>
         <input
@@ -69,11 +69,11 @@ export function RegisterForm({ copy }: RegisterFormProps) {
           type="text"
           required
           placeholder={copy.firstNamePlaceholder}
-          className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
+          className="ui-input h-14 w-full"
         />
       </div>
       <div className="space-y-4">
-        <label htmlFor="email" className="text-xs font-medium text-white">
+        <label htmlFor="email" className="text-xs font-medium text-[var(--text-primary)]">
           {copy.emailLabel}
         </label>
         <input
@@ -82,11 +82,11 @@ export function RegisterForm({ copy }: RegisterFormProps) {
           type="email"
           required
           placeholder={copy.emailPlaceholder}
-          className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
+          className="ui-input h-14 w-full"
         />
       </div>
       <div className="space-y-4">
-        <label htmlFor="password" className="text-xs font-medium text-white">
+        <label htmlFor="password" className="text-xs font-medium text-[var(--text-primary)]">
           {copy.passwordLabel}
         </label>
         <input
@@ -96,20 +96,20 @@ export function RegisterForm({ copy }: RegisterFormProps) {
           required
           minLength={8}
           placeholder={copy.passwordPlaceholder}
-          className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
+          className="ui-input h-14 w-full"
         />
       </div>
-      {error ? <p className="text-xs text-white">{error}</p> : null}
+      {error ? <p className="select-none text-xs text-[var(--text-primary)]">{error}</p> : null}
       <button
         type="submit"
         disabled={loading}
-        className="h-12 w-full rounded-lg border border-white bg-white px-4 text-sm font-bold text-black transition hover:bg-white/90 disabled:opacity-60"
+        className="ui-button-primary h-12 w-full"
       >
         {loading ? copy.submitting : copy.submit}
       </button>
-      <p className="pt-1 text-center text-xs leading-none text-white/60">
+      <p className="select-none pt-1 text-center text-xs leading-none text-[var(--text-secondary)]">
         {copy.hasAccount}{" "}
-        <Link href="/login" className="font-semibold text-white/85 transition hover:text-white">
+        <Link href="/login" className="font-semibold text-[var(--text-primary)] transition hover:opacity-80">
           {copy.signIn}
         </Link>
       </p>

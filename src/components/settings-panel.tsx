@@ -12,6 +12,14 @@ type UserPreferences = {
     backgroundSecondary?: string;
     textPrimary?: string;
     textSecondary?: string;
+    borderColor?: string;
+    inputBackground?: string;
+    headerBackground?: string;
+    headerText?: string;
+    primaryButtonBackground?: string;
+    primaryButtonText?: string;
+    secondaryButtonBackground?: string;
+    secondaryButtonText?: string;
   } | null;
 };
 
@@ -29,13 +37,29 @@ type ColorsPayload = {
   backgroundSecondary: string;
   textPrimary: string;
   textSecondary: string;
+  borderColor: string;
+  inputBackground: string;
+  headerBackground: string;
+  headerText: string;
+  primaryButtonBackground: string;
+  primaryButtonText: string;
+  secondaryButtonBackground: string;
+  secondaryButtonText: string;
 };
 
 const DEFAULT_COLORS: ColorsPayload = {
-  backgroundPrimary: "#f8fafc",
-  backgroundSecondary: "#ffffff",
-  textPrimary: "#18181b",
-  textSecondary: "#52525b",
+  backgroundPrimary: "#ffe3d5",
+  backgroundSecondary: "#00000000",
+  textPrimary: "#946a56",
+  textSecondary: "#946a56",
+  borderColor: "#946a56",
+  inputBackground: "#00000000",
+  headerBackground: "#946a56",
+  headerText: "#ffffff",
+  primaryButtonBackground: "#946a56",
+  primaryButtonText: "#ffffff",
+  secondaryButtonBackground: "#00000000",
+  secondaryButtonText: "#946a56",
 };
 
 function applyColors(colors: Partial<ColorsPayload>) {
@@ -51,6 +75,30 @@ function applyColors(colors: Partial<ColorsPayload>) {
   }
   if (colors.textSecondary) {
     root.style.setProperty("--text-secondary", colors.textSecondary);
+  }
+  if (colors.borderColor) {
+    root.style.setProperty("--border-color", colors.borderColor);
+  }
+  if (colors.inputBackground) {
+    root.style.setProperty("--input-background", colors.inputBackground);
+  }
+  if (colors.headerBackground) {
+    root.style.setProperty("--header-background", colors.headerBackground);
+  }
+  if (colors.headerText) {
+    root.style.setProperty("--header-text", colors.headerText);
+  }
+  if (colors.primaryButtonBackground) {
+    root.style.setProperty("--primary-button-background", colors.primaryButtonBackground);
+  }
+  if (colors.primaryButtonText) {
+    root.style.setProperty("--primary-button-text", colors.primaryButtonText);
+  }
+  if (colors.secondaryButtonBackground) {
+    root.style.setProperty("--secondary-button-background", colors.secondaryButtonBackground);
+  }
+  if (colors.secondaryButtonText) {
+    root.style.setProperty("--secondary-button-text", colors.secondaryButtonText);
   }
 }
 
@@ -102,6 +150,14 @@ export function SettingsPanel() {
           backgroundSecondary: prefs?.colors?.backgroundSecondary ?? DEFAULT_COLORS.backgroundSecondary,
           textPrimary: prefs?.colors?.textPrimary ?? DEFAULT_COLORS.textPrimary,
           textSecondary: prefs?.colors?.textSecondary ?? DEFAULT_COLORS.textSecondary,
+          borderColor: prefs?.colors?.borderColor ?? DEFAULT_COLORS.borderColor,
+          inputBackground: prefs?.colors?.inputBackground ?? DEFAULT_COLORS.inputBackground,
+          headerBackground: prefs?.colors?.headerBackground ?? DEFAULT_COLORS.headerBackground,
+          headerText: prefs?.colors?.headerText ?? DEFAULT_COLORS.headerText,
+          primaryButtonBackground: prefs?.colors?.primaryButtonBackground ?? DEFAULT_COLORS.primaryButtonBackground,
+          primaryButtonText: prefs?.colors?.primaryButtonText ?? DEFAULT_COLORS.primaryButtonText,
+          secondaryButtonBackground: prefs?.colors?.secondaryButtonBackground ?? DEFAULT_COLORS.secondaryButtonBackground,
+          secondaryButtonText: prefs?.colors?.secondaryButtonText ?? DEFAULT_COLORS.secondaryButtonText,
         };
 
         setColors(loadedColors);
@@ -192,96 +248,94 @@ export function SettingsPanel() {
     }
   }
 
+  const colorFields: Array<{ key: keyof ColorsPayload; label: string }> = [
+    { key: "backgroundPrimary", label: messages.settings.backgroundPrimary },
+    { key: "backgroundSecondary", label: messages.settings.backgroundSecondary },
+    { key: "textPrimary", label: messages.settings.textPrimary },
+    { key: "textSecondary", label: messages.settings.textSecondary },
+    { key: "borderColor", label: messages.settings.borderColor },
+    { key: "inputBackground", label: messages.settings.inputBackground },
+    { key: "headerBackground", label: messages.settings.headerBackground },
+    { key: "headerText", label: messages.settings.headerText },
+    { key: "primaryButtonBackground", label: messages.settings.primaryButtonBackground },
+    { key: "primaryButtonText", label: messages.settings.primaryButtonText },
+    { key: "secondaryButtonBackground", label: messages.settings.secondaryButtonBackground },
+    { key: "secondaryButtonText", label: messages.settings.secondaryButtonText },
+  ];
+
   return (
     <section className="space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold">{messages.settings.title}</h1>
-        <p className="text-sm text-[var(--text-secondary)]">{messages.settings.subtitle}</p>
+        <h1 className="text-2xl font-bold tracking-[-0.02em]">{messages.settings.title}</h1>
+        <p className="ui-muted select-none text-sm">{messages.settings.subtitle}</p>
       </div>
 
-      {isLoading ? <p className="text-sm text-[var(--text-secondary)]">{messages.settings.loading}</p> : null}
-      {error ? <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
-      {message ? <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{message}</p> : null}
+      {isLoading ? <p className="ui-muted text-sm">{messages.settings.loading}</p> : null}
+      {error ? <p className="ui-error">{error}</p> : null}
+      {message ? <p className="ui-success">{message}</p> : null}
 
-      <form onSubmit={handleSaveLanguage} className="space-y-3 rounded-md border border-zinc-200 p-4">
-        <h2 className="text-lg font-medium">{messages.settings.languageTitle}</h2>
-        <select
-          value={language}
-          onChange={(event) => setLanguage(event.target.value as AppLocale)}
-          className="rounded-md border border-zinc-300 px-3 py-2"
-        >
-          <option value="en">English</option>
-          <option value="pt">Português</option>
-          <option value="es">Español</option>
-        </select>
-        <div>
-          <button
-            type="submit"
-            disabled={isSavingLanguage}
-            className="rounded-md border border-zinc-300/50 bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] disabled:opacity-60"
+      <div className="ui-card space-y-8 p-5 sm:p-6">
+        <form onSubmit={handleSaveLanguage} className="space-y-4">
+          <h2 className="text-lg font-medium">{messages.settings.languageTitle}</h2>
+          <select
+            value={language}
+            onChange={(event) => setLanguage(event.target.value as AppLocale)}
+            className="ui-input max-w-md"
           >
-            {isSavingLanguage ? messages.settings.loading : messages.settings.saveLanguage}
-          </button>
-        </div>
-      </form>
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+            <option value="es">Español</option>
+          </select>
+          <div>
+            <button
+              type="submit"
+              disabled={isSavingLanguage}
+              className="ui-button-primary"
+            >
+              {isSavingLanguage ? messages.settings.loading : messages.settings.saveLanguage}
+            </button>
+          </div>
+        </form>
 
-      <form onSubmit={handleSaveColors} className="space-y-3 rounded-md border border-zinc-200 p-4">
-        <h2 className="text-lg font-medium">{messages.settings.colorsTitle}</h2>
+        <form onSubmit={handleSaveColors} className="space-y-4 border-t border-[var(--border-color)] pt-8">
+          <h2 className="text-lg font-medium">{messages.settings.colorsTitle}</h2>
 
-        <label className="flex items-center justify-between gap-3 text-sm">
-          {messages.settings.backgroundPrimary}
-          <input
-            type="color"
-            value={colors.backgroundPrimary}
-            onChange={(event) => setColors((current) => ({ ...current, backgroundPrimary: event.target.value }))}
-          />
-        </label>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {colorFields.map((field) => (
+              <label
+                key={field.key}
+                className="flex min-w-0 items-center justify-between gap-3 text-sm"
+              >
+                <span className="min-w-0 pr-2 leading-snug">{field.label}</span>
+                <input
+                  type="color"
+                  value={colors[field.key]}
+                  onChange={(event) => setColors((current) => ({ ...current, [field.key]: event.target.value }))}
+                  className="h-10 w-20 shrink-0 rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-1"
+                />
+              </label>
+            ))}
+          </div>
 
-        <label className="flex items-center justify-between gap-3 text-sm">
-          {messages.settings.backgroundSecondary}
-          <input
-            type="color"
-            value={colors.backgroundSecondary}
-            onChange={(event) => setColors((current) => ({ ...current, backgroundSecondary: event.target.value }))}
-          />
-        </label>
-
-        <label className="flex items-center justify-between gap-3 text-sm">
-          {messages.settings.textPrimary}
-          <input
-            type="color"
-            value={colors.textPrimary}
-            onChange={(event) => setColors((current) => ({ ...current, textPrimary: event.target.value }))}
-          />
-        </label>
-
-        <label className="flex items-center justify-between gap-3 text-sm">
-          {messages.settings.textSecondary}
-          <input
-            type="color"
-            value={colors.textSecondary}
-            onChange={(event) => setColors((current) => ({ ...current, textSecondary: event.target.value }))}
-          />
-        </label>
-
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="submit"
-            disabled={isSavingColors}
-            className="rounded-md border border-zinc-300/50 bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] disabled:opacity-60"
-          >
-            {isSavingColors ? messages.settings.loading : messages.settings.saveColors}
-          </button>
-          <button
-            type="button"
-            onClick={() => void handleResetColors()}
-            disabled={isSavingColors}
-            className="rounded-md border border-zinc-300/50 bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] disabled:opacity-60"
-          >
-            {messages.settings.resetColors}
-          </button>
-        </div>
-      </form>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="submit"
+              disabled={isSavingColors}
+              className="ui-button-primary"
+            >
+              {isSavingColors ? messages.settings.loading : messages.settings.saveColors}
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleResetColors()}
+              disabled={isSavingColors}
+              className="ui-button-secondary"
+            >
+              {messages.settings.resetColors}
+            </button>
+          </div>
+        </form>
+      </div>
     </section>
   );
 }

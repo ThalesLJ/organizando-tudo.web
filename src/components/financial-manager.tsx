@@ -278,20 +278,24 @@ export function FinancialManager() {
   }
 
   if (loading) {
-    return <p className="text-sm text-[var(--text-secondary)]">{messages.financial.loading}</p>;
+    return (
+      <section className="private-floating-page">
+        <p className="ui-muted text-sm">{messages.financial.loading}</p>
+      </section>
+    );
   }
 
   return (
-    <section className="space-y-4">
-      {error ? <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p> : null}
+    <section className="private-floating-page space-y-5">
+      {error ? <p className="ui-error">{error}</p> : null}
 
-      <form onSubmit={handleSubmitBudget} className="space-y-3 rounded-md border border-zinc-300/40 bg-[var(--bg-secondary)] p-4">
+      <form onSubmit={handleSubmitBudget} className="ui-card space-y-4 p-5">
         <h2 className="text-lg font-semibold">{messages.financial.createBudgetSection}</h2>
         <input
           value={budgetForm.name}
           onChange={(event) => setBudgetForm((current) => ({ ...current, name: event.target.value }))}
           placeholder={messages.financial.name}
-          className="w-full rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm"
+          className="ui-input w-full"
           required
         />
         <input
@@ -301,24 +305,24 @@ export function FinancialManager() {
           value={budgetForm.amount}
           onChange={(event) => setBudgetForm((current) => ({ ...current, amount: event.target.value }))}
           placeholder={messages.financial.amount}
-          className="w-full rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm"
+          className="ui-input w-full"
           required
         />
         <input
           value={budgetForm.icon}
           onChange={(event) => setBudgetForm((current) => ({ ...current, icon: event.target.value }))}
           placeholder={messages.financial.icon}
-          className="w-full rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm"
+          className="ui-input w-full"
           required
         />
         <input
           type="color"
           value={budgetForm.color}
           onChange={(event) => setBudgetForm((current) => ({ ...current, color: event.target.value }))}
-          className="h-10 w-20 rounded border border-zinc-300/50 bg-[var(--bg-primary)]"
+          className="h-12 w-24 rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-1"
         />
         <div className="flex gap-2">
-          <button disabled={saving} className="rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm">
+          <button disabled={saving} className="ui-button-primary">
             {editingBudgetId ? messages.financial.updateBudget : messages.financial.addBudget}
           </button>
           {editingBudgetId ? (
@@ -328,7 +332,7 @@ export function FinancialManager() {
                 setEditingBudgetId(null);
                 setBudgetForm(budgetDefault);
               }}
-              className="rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm"
+              className="ui-button-secondary"
             >
               {messages.financial.cancelEdit}
             </button>
@@ -336,18 +340,18 @@ export function FinancialManager() {
         </div>
       </form>
 
-      <section className="space-y-2 rounded-md border border-zinc-300/40 bg-[var(--bg-secondary)] p-4">
+      <section className="ui-card space-y-3 p-5">
         <h3 className="text-base font-semibold">{messages.financial.listBudgetSection}</h3>
-        {budgets.length === 0 ? <p className="text-sm text-[var(--text-secondary)]">{messages.financial.emptyBudgets}</p> : null}
+        {budgets.length === 0 ? <p className="ui-muted text-sm">{messages.financial.emptyBudgets}</p> : null}
         {budgets.map((item) => (
-          <article key={item.id} className="rounded border border-zinc-300/40 bg-[var(--bg-primary)] p-3 text-sm">
+          <article key={item.id} className="rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-4 text-sm">
             <p className="font-semibold">{item.name}</p>
-            <p className="text-xs text-[var(--text-secondary)]">{item.amount.toFixed(2)}</p>
-            <div className="mt-2 flex gap-2 text-xs">
-              <button type="button" onClick={() => startEditBudget(item)} className="underline">
+            <p className="ui-muted text-xs">{item.amount.toFixed(2)}</p>
+            <div className="mt-3 flex gap-2 text-xs">
+              <button type="button" onClick={() => startEditBudget(item)} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
                 {messages.financial.edit}
               </button>
-              <button type="button" onClick={() => void handleDeleteBudget(item.id)} className="underline">
+              <button type="button" onClick={() => void handleDeleteBudget(item.id)} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
                 {messages.financial.delete}
               </button>
             </div>
@@ -355,12 +359,12 @@ export function FinancialManager() {
         ))}
       </section>
 
-      <form onSubmit={handleSubmitExpense} className="space-y-3 rounded-md border border-zinc-300/40 bg-[var(--bg-secondary)] p-4">
+      <form onSubmit={handleSubmitExpense} className="ui-card space-y-4 p-5">
         <h2 className="text-lg font-semibold">{messages.financial.createExpenseSection}</h2>
         <select
           value={expenseForm.budgetId}
           onChange={(event) => setExpenseForm((current) => ({ ...current, budgetId: event.target.value }))}
-          className="w-full rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm"
+          className="ui-input w-full"
           required
         >
           {budgets.map((budget) => (
@@ -373,7 +377,7 @@ export function FinancialManager() {
           value={expenseForm.name}
           onChange={(event) => setExpenseForm((current) => ({ ...current, name: event.target.value }))}
           placeholder={messages.financial.name}
-          className="w-full rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm"
+          className="ui-input w-full"
           required
         />
         <input
@@ -383,23 +387,23 @@ export function FinancialManager() {
           value={expenseForm.amount}
           onChange={(event) => setExpenseForm((current) => ({ ...current, amount: event.target.value }))}
           placeholder={messages.financial.amount}
-          className="w-full rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm"
+          className="ui-input w-full"
           required
         />
         <input
           value={expenseForm.description}
           onChange={(event) => setExpenseForm((current) => ({ ...current, description: event.target.value }))}
           placeholder={messages.financial.description}
-          className="w-full rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm"
+          className="ui-input w-full"
         />
         <input
           type="color"
           value={expenseForm.color}
           onChange={(event) => setExpenseForm((current) => ({ ...current, color: event.target.value }))}
-          className="h-10 w-20 rounded border border-zinc-300/50 bg-[var(--bg-primary)]"
+          className="h-12 w-24 rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-1"
         />
         <div className="flex gap-2">
-          <button disabled={saving} className="rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm">
+          <button disabled={saving} className="ui-button-primary">
             {editingExpenseId ? messages.financial.updateExpense : messages.financial.addExpense}
           </button>
           {editingExpenseId ? (
@@ -409,7 +413,7 @@ export function FinancialManager() {
                 setEditingExpenseId(null);
                 setExpenseForm((current) => ({ ...expenseDefault, budgetId: current.budgetId || budgets[0]?.id || "" }));
               }}
-              className="rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm"
+              className="ui-button-secondary"
             >
               {messages.financial.cancelEdit}
             </button>
@@ -417,19 +421,19 @@ export function FinancialManager() {
         </div>
       </form>
 
-      <section className="space-y-2 rounded-md border border-zinc-300/40 bg-[var(--bg-secondary)] p-4">
+      <section className="ui-card space-y-3 p-5">
         <h3 className="text-base font-semibold">{messages.financial.listExpenseSection}</h3>
-        {expenses.length === 0 ? <p className="text-sm text-[var(--text-secondary)]">{messages.financial.emptyExpenses}</p> : null}
+        {expenses.length === 0 ? <p className="ui-muted text-sm">{messages.financial.emptyExpenses}</p> : null}
         {expenses.map((item) => (
-          <article key={item.id} className="rounded border border-zinc-300/40 bg-[var(--bg-primary)] p-3 text-sm">
+          <article key={item.id} className="rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-4 text-sm">
             <p className="font-semibold">{item.name}</p>
-            <p className="text-xs text-[var(--text-secondary)]">{budgetMap.get(item.budgetId)?.name ?? "-"}</p>
-            <p className="text-xs text-[var(--text-secondary)]">{item.amount.toFixed(2)}</p>
-            <div className="mt-2 flex gap-2 text-xs">
-              <button type="button" onClick={() => startEditExpense(item)} className="underline">
+            <p className="ui-muted text-xs">{budgetMap.get(item.budgetId)?.name ?? "-"}</p>
+            <p className="ui-muted text-xs">{item.amount.toFixed(2)}</p>
+            <div className="mt-3 flex gap-2 text-xs">
+              <button type="button" onClick={() => startEditExpense(item)} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
                 {messages.financial.edit}
               </button>
-              <button type="button" onClick={() => void handleDeleteExpense(item.id)} className="underline">
+              <button type="button" onClick={() => void handleDeleteExpense(item.id)} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
                 {messages.financial.delete}
               </button>
             </div>

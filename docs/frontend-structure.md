@@ -57,7 +57,7 @@ Constraints:
 - Must not handle authentication logic directly
 - Must not access external APIs
 - Login form rendering is client-only to avoid hydration mismatch caused by browser DOM injection
-- Language switcher rendering is client-only to avoid hydration mismatch caused by browser extensions or antivirus DOM injection and uses the same monochrome visual style as authentication inputs
+- Language switcher rendering is client-only to avoid hydration mismatch caused by browser extensions or antivirus DOM injection and uses the same theme visual style as authentication inputs
 - Notes editor page uses TipTap rich text editor in client components
 - Runtime user preferences loader applies locale and colors globally on app load
 
@@ -116,12 +116,33 @@ For `/api/notes/:id` GET:
 - The client never accesses the token directly
 - Login identifier can be either email or username as plain text
 - On successful login, the client redirects to `/dashboard`
-- Authentication pages (`/login`, `/register`, `/recover`) use a black-and-white responsive layout and keep locale switching available
+- Default page background is `#ffe3d5`, default typography color is `#946a56`, and shared surfaces (`ui-panel`, `ui-card`, inputs, secondary actions) use transparent backgrounds via `#00000000` so the page background shows through where borders define structure
+- Authentication pages (`/login`, `/register`, `/recover`) use the legacy peach and brown responsive layout and keep locale switching available
 - Login and register pages show enlarged minimalist social links for LinkedIn and GitHub using `react-icons` (`FaLinkedin`, `FaGithub`)
 - Recover page uses a two-step flow: first send code with email, then replace with verification code + new password + confirm password form
 - Authentication pages use a reference-sized visual scale for controls and typography (title, labels, inputs, buttons, helper text, and social icons), with `4` scale spacing between field labels and inputs
 - Authentication container is centered, moderately narrow, and vertically aligned to match the reference login, register, and recovery screens
 - Authentication texts are localized through `messages.ts` for `en`, `pt`, and `es`
+- Private application pages use the same legacy peach and brown visual system through shared UI classes for shells, panels, cards, inputs, buttons, and feedback messages
+- Dashboard, financial CRUD, notes list, note editor, public note viewer, settings, navigation and floating action controls follow the authentication visual pattern
+- Private navigation renders logout as plain text like other nav links (no border or button chrome), aligned on the right of the header row; it remains a `button` for accessibility and POST logout
+- Note editor pages use the private layout panel as their single background container
+- Public note viewer uses a single content container, a floating title without background, and a full-width themed page background
+- Public note viewer uses a floating `react-icons` back icon without button background
+- Page and section titles are non-selectable across the app, including authentication titles, private page headings and heading helper text
+- Clickable UI items and their children are non-selectable across the app, including links, buttons, selects, labels and button-like controls
+- Authentication forms also mark helper copy as non-selectable, including the recover info box, the login and register footer lines ("Don't have an account?" / "Already have an account?"), and the recover "Remember your password?" line
+- Notes list and public note viewer keep public note content selectable while private-content placeholders are explicitly non-selectable
+- Notes list removes the private layout panel background so filters and note cards float directly on the page (same `!important` panel reset as Dashboard/Financial when `.notes-floating-page` is present)
+- Dashboard and Financial pages use the same `private-floating-page` marker so the private layout panel yields no outer border, background, or padding and inner sections float on the page background; the panel reset lives outside `@layer` and uses `!important` so it wins over `p-5 sm:p-6` utilities on the same element as `ui-panel`
+- Notes list aligns visibility filters to the left and sorting controls to the right, with private-content placeholders centered horizontally and vertically
+- Notes list expands horizontally beyond the private layout padding to align with the private navbar content width
+- Public note previews keep a fixed height increased by 30px total and use a minimalist vertical scrollbar when content exceeds the preview area
+- Notes list card text is 1px larger across titles, previews, timestamps and actions
+- Notes list dates use `dd/MM/yyyy HH:mm:ss` for Portuguese and `yyyy/MM/dd hh:mm:ss AM/PM` for other languages
+- The notes creation action is a viewport-fixed floating button positioned at the bottom-right of the page
+- User color preferences now include independent labels for page backgrounds, text, borders, input background, header background/text, primary button background/text and secondary button background/text
+- Settings page uses one shared `ui-card` wrapper for the Language and Colors forms; color pickers are laid out in a responsive grid (one column on small screens, two on `sm`, three on `lg`)
 
 ---
 

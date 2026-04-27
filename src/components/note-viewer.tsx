@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { FaChevronLeft } from "react-icons/fa";
 import { useLocaleMessages } from "@/lib/locale-client";
 
 type NoteResponse = {
@@ -60,30 +61,43 @@ export function NoteViewer({ noteId }: NoteViewerProps) {
   }, [noteId, messages.viewer.loadError]);
 
   if (isLoading) {
-    return <p className="text-sm text-[var(--text-secondary)]">{messages.viewer.loading}</p>;
+    return (
+      <main className="min-h-screen w-full bg-[var(--bg-primary)] px-4 py-6 text-[var(--text-primary)]">
+        <p className="ui-muted text-sm">{messages.viewer.loading}</p>
+      </main>
+    );
   }
 
   if (error) {
-    return <p className="rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>;
+    return (
+      <main className="min-h-screen w-full bg-[var(--bg-primary)] px-4 py-6 text-[var(--text-primary)]">
+        <p className="ui-error">{error}</p>
+      </main>
+    );
   }
 
   if (!note) {
-    return <p className="text-sm text-[var(--text-secondary)]">{messages.viewer.notFound}</p>;
+    return (
+      <main className="min-h-screen w-full bg-[var(--bg-primary)] px-4 py-6 text-[var(--text-primary)]">
+        <p className="ui-muted text-sm">{messages.viewer.notFound}</p>
+      </main>
+    );
   }
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-5xl px-4 py-6">
+    <main className="min-h-screen w-full bg-[var(--bg-primary)] px-4 py-6 text-[var(--text-primary)]">
       <Link
         href="/login"
-        className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center border border-zinc-300/50 bg-[var(--bg-secondary)] text-xl text-[var(--text-primary)]"
+        aria-label="Voltar"
+        className="fixed left-4 top-4 z-50 text-2xl text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]"
       >
-        ←
+        <FaChevronLeft />
       </Link>
-      <div className="rounded border border-zinc-300/40 bg-[var(--bg-secondary)] p-4 text-[var(--text-primary)]">
-        <h1 className="mb-3 rounded border border-zinc-300/50 bg-[var(--bg-primary)] px-3 py-2 text-sm font-medium">
+      <div className="mx-auto w-full max-w-5xl">
+        <h1 className="mb-4 text-sm font-medium">
           {note.title}
         </h1>
-        <div className="rounded border border-zinc-300/50 bg-[var(--bg-primary)] p-3 text-sm leading-relaxed">
+        <div className="note-public-content rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-4 text-sm leading-relaxed">
           <div dangerouslySetInnerHTML={{ __html: note.content || "<p>Sem conteúdo</p>" }} />
         </div>
       </div>
