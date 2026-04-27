@@ -4,7 +4,25 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-export function RegisterForm() {
+type RegisterFormCopy = {
+  firstNameLabel: string;
+  firstNamePlaceholder: string;
+  emailLabel: string;
+  emailPlaceholder: string;
+  passwordLabel: string;
+  passwordPlaceholder: string;
+  submit: string;
+  submitting: string;
+  hasAccount: string;
+  signIn: string;
+  errorDefault: string;
+};
+
+type RegisterFormProps = {
+  copy: RegisterFormCopy;
+};
+
+export function RegisterForm({ copy }: RegisterFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -30,7 +48,7 @@ export function RegisterForm() {
     const data = await response.json();
 
     if (!response.ok || !data.success) {
-      setError(data.error || "Falha ao cadastrar");
+      setError(data.error || copy.errorDefault);
       setLoading(false);
       return;
     }
@@ -40,34 +58,36 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-1">
-        <label htmlFor="username" className="text-sm text-zinc-700">
-          Usuário
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="space-y-4">
+        <label htmlFor="username" className="text-xs font-medium text-white">
+          {copy.firstNameLabel}
         </label>
         <input
           id="username"
           name="username"
           type="text"
           required
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-zinc-500"
+          placeholder={copy.firstNamePlaceholder}
+          className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
         />
       </div>
-      <div className="space-y-1">
-        <label htmlFor="email" className="text-sm text-zinc-700">
-          E-mail
+      <div className="space-y-4">
+        <label htmlFor="email" className="text-xs font-medium text-white">
+          {copy.emailLabel}
         </label>
         <input
           id="email"
           name="email"
           type="email"
           required
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-zinc-500"
+          placeholder={copy.emailPlaceholder}
+          className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
         />
       </div>
-      <div className="space-y-1">
-        <label htmlFor="password" className="text-sm text-zinc-700">
-          Senha
+      <div className="space-y-4">
+        <label htmlFor="password" className="text-xs font-medium text-white">
+          {copy.passwordLabel}
         </label>
         <input
           id="password"
@@ -75,22 +95,24 @@ export function RegisterForm() {
           type="password"
           required
           minLength={8}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-zinc-500"
+          placeholder={copy.passwordPlaceholder}
+          className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
         />
       </div>
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      {error ? <p className="text-xs text-white">{error}</p> : null}
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-md bg-zinc-900 px-3 py-2 text-white disabled:opacity-60"
+        className="h-12 w-full rounded-lg border border-white bg-white px-4 text-sm font-bold text-black transition hover:bg-white/90 disabled:opacity-60"
       >
-        {loading ? "Criando conta..." : "Cadastrar"}
+        {loading ? copy.submitting : copy.submit}
       </button>
-      <div className="text-sm">
-        <Link href="/login" className="text-zinc-700 hover:text-zinc-900">
-          Já tenho conta
+      <p className="pt-1 text-center text-xs leading-none text-white/60">
+        {copy.hasAccount}{" "}
+        <Link href="/login" className="font-semibold text-white/85 transition hover:text-white">
+          {copy.signIn}
         </Link>
-      </div>
+      </p>
     </form>
   );
 }

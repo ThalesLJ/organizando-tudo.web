@@ -3,9 +3,37 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
-export function RecoverForm() {
+type RecoverFormCopy = {
+  emailLabel: string;
+  emailPlaceholder: string;
+  sendCodeInfo: string;
+  sendCode: string;
+  sending: string;
+  verificationCodeLabel: string;
+  verificationCodePlaceholder: string;
+  newPasswordLabel: string;
+  newPasswordPlaceholder: string;
+  confirmPasswordLabel: string;
+  confirmPasswordPlaceholder: string;
+  resetPassword: string;
+  resetting: string;
+  rememberPassword: string;
+  signIn: string;
+  sendErrorDefault: string;
+  resetErrorDefault: string;
+  passwordMismatch: string;
+  sendSuccess: string;
+  resetSuccess: string;
+};
+
+type RecoverFormProps = {
+  copy: RecoverFormCopy;
+};
+
+export function RecoverForm({ copy }: RecoverFormProps) {
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [codeSent, setCodeSent] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -28,12 +56,13 @@ export function RecoverForm() {
 
     const data = await response.json();
     if (!response.ok || !data.success) {
-      setError(data.error || "Falha ao enviar código");
+      setError(data.error || copy.sendErrorDefault);
       setSending(false);
       return;
     }
 
-    setMessage("Se o e-mail existir, o código será enviado.");
+    setMessage(copy.sendSuccess);
+    setCodeSent(true);
     setSending(false);
   }
 
@@ -44,9 +73,17 @@ export function RecoverForm() {
     setMessage("");
 
     const formData = new FormData(event.currentTarget);
+    const password = String(formData.get("password") || "");
+    const confirmPassword = String(formData.get("confirmPassword") || "");
+    if (password !== confirmPassword) {
+      setError(copy.passwordMismatch);
+      setVerifying(false);
+      return;
+    }
+
     const payload = {
       code: String(formData.get("code") || ""),
-      password: String(formData.get("password") || ""),
+      password,
     };
 
     const response = await fetch("/api/auth/verify-code", {
@@ -57,70 +94,106 @@ export function RecoverForm() {
 
     const data = await response.json();
     if (!response.ok || !data.success) {
-      setError(data.error || "Falha ao redefinir senha");
+      setError(data.error || copy.resetErrorDefault);
       setVerifying(false);
       return;
     }
 
-    setMessage("Senha redefinida com sucesso.");
+    setMessage(copy.resetSuccess);
     setVerifying(false);
   }
 
   return (
-    <div className="space-y-6">
-      <form onSubmit={handleSendCode} className="space-y-3 rounded-md border border-zinc-200 p-4">
-        <h2 className="font-medium text-zinc-900">1) Solicitar código</h2>
-        <input
-          name="email"
-          type="email"
-          required
-          placeholder="seu@email.com"
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-zinc-500"
-        />
-        <button
-          type="submit"
-          disabled={sending}
-          className="rounded-md bg-zinc-900 px-3 py-2 text-white disabled:opacity-60"
-        >
-          {sending ? "Enviando..." : "Enviar código"}
-        </button>
-      </form>
+    <div className="space-y-5">
+      {!codeSent ? (
+        <form onSubmit={handleSendCode} className="space-y-5">
+          <div className="space-y-4">
+            <label htmlFor="email" className="text-xs font-medium text-white">
+              {copy.emailLabel}
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              placeholder={copy.emailPlaceholder}
+              className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
+            />
+          </div>
+          <div className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-xs leading-snug text-white/70">
+            {copy.sendCodeInfo}
+          </div>
+          <button
+            type="submit"
+            disabled={sending}
+            className="h-12 w-full rounded-lg border border-white bg-white px-4 text-sm font-bold text-black transition hover:bg-white/90 disabled:opacity-60"
+          >
+            {sending ? copy.sending : copy.sendCode}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifyCode} className="space-y-5">
+          <div className="space-y-4">
+            <label htmlFor="code" className="text-xs font-medium text-white">
+              {copy.verificationCodeLabel}
+            </label>
+            <input
+              id="code"
+              name="code"
+              type="text"
+              required
+              minLength={6}
+              maxLength={6}
+              placeholder={copy.verificationCodePlaceholder}
+              className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-center text-sm tracking-[0.2em] text-white outline-none placeholder:text-white/30 focus:border-white/45"
+            />
+          </div>
+          <div className="space-y-4">
+            <label htmlFor="password" className="text-xs font-medium text-white">
+              {copy.newPasswordLabel}
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              minLength={8}
+              placeholder={copy.newPasswordPlaceholder}
+              className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
+            />
+          </div>
+          <div className="space-y-4">
+            <label htmlFor="confirmPassword" className="text-xs font-medium text-white">
+              {copy.confirmPasswordLabel}
+            </label>
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              required
+              minLength={8}
+              placeholder={copy.confirmPasswordPlaceholder}
+              className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={verifying}
+            className="h-12 w-full rounded-lg border border-white bg-white px-4 text-sm font-bold text-black transition hover:bg-white/90 disabled:opacity-60"
+          >
+            {verifying ? copy.resetting : copy.resetPassword}
+          </button>
+        </form>
+      )}
 
-      <form onSubmit={handleVerifyCode} className="space-y-3 rounded-md border border-zinc-200 p-4">
-        <h2 className="font-medium text-zinc-900">2) Validar código e redefinir senha</h2>
-        <input
-          name="code"
-          type="text"
-          required
-          minLength={6}
-          maxLength={6}
-          placeholder="123456"
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-zinc-500"
-        />
-        <input
-          name="password"
-          type="password"
-          required
-          minLength={8}
-          placeholder="Nova senha"
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-zinc-500"
-        />
-        <button
-          type="submit"
-          disabled={verifying}
-          className="rounded-md bg-zinc-900 px-3 py-2 text-white disabled:opacity-60"
-        >
-          {verifying ? "Validando..." : "Redefinir senha"}
-        </button>
-      </form>
-
-      {message ? <p className="text-sm text-emerald-700">{message}</p> : null}
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      <div className="text-sm">
-        <Link href="/login" className="text-zinc-700 hover:text-zinc-900">
-          Voltar para login
+      {message ? <p className="text-xs text-white">{message}</p> : null}
+      {error ? <p className="text-xs text-white">{error}</p> : null}
+      <p className="text-center text-xs leading-none text-white/60">
+        {copy.rememberPassword}{" "}
+        <Link href="/login" className="font-semibold text-white/85 transition hover:text-white">
+          {copy.signIn}
         </Link>
-      </div>
+      </p>
     </div>
   );
 }

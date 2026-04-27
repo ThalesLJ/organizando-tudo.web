@@ -57,7 +57,7 @@ Constraints:
 - Must not handle authentication logic directly
 - Must not access external APIs
 - Login form rendering is client-only to avoid hydration mismatch caused by browser DOM injection
-- Language switcher rendering is client-only to avoid hydration mismatch caused by browser extensions or antivirus DOM injection
+- Language switcher rendering is client-only to avoid hydration mismatch caused by browser extensions or antivirus DOM injection and uses the same monochrome visual style as authentication inputs
 - Notes editor page uses TipTap rich text editor in client components
 - Runtime user preferences loader applies locale and colors globally on app load
 
@@ -115,6 +115,13 @@ For `/api/notes/:id` GET:
 - The token is forwarded to the external API as a Bearer token
 - The client never accesses the token directly
 - Login identifier can be either email or username as plain text
+- On successful login, the client redirects to `/dashboard`
+- Authentication pages (`/login`, `/register`, `/recover`) use a black-and-white responsive layout and keep locale switching available
+- Login and register pages show enlarged minimalist social links for LinkedIn and GitHub using `react-icons` (`FaLinkedin`, `FaGithub`)
+- Recover page uses a two-step flow: first send code with email, then replace with verification code + new password + confirm password form
+- Authentication pages use a reference-sized visual scale for controls and typography (title, labels, inputs, buttons, helper text, and social icons), with `4` scale spacing between field labels and inputs
+- Authentication container is centered, moderately narrow, and vertically aligned to match the reference login, register, and recovery screens
+- Authentication texts are localized through `messages.ts` for `en`, `pt`, and `es`
 
 ---
 

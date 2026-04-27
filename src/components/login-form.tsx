@@ -4,7 +4,25 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-export function LoginForm() {
+type LoginFormCopy = {
+  identifierLabel: string;
+  identifierPlaceholder: string;
+  passwordLabel: string;
+  passwordPlaceholder: string;
+  keepSignedIn: string;
+  submit: string;
+  submitting: string;
+  forgotPassword: string;
+  noAccount: string;
+  createAccount: string;
+  errorDefault: string;
+};
+
+type LoginFormProps = {
+  copy: LoginFormCopy;
+};
+
+export function LoginForm({ copy }: LoginFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -22,7 +40,7 @@ export function LoginForm() {
         return message.join(", ");
       }
     }
-    return "Falha ao autenticar";
+    return copy.errorDefault;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -51,15 +69,15 @@ export function LoginForm() {
       return;
     }
 
-    router.replace("/notes");
+    router.replace("/dashboard");
     router.refresh();
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-1">
-        <label htmlFor="identifier" className="text-sm text-zinc-700">
-          E-mail ou usuário
+    <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="space-y-4">
+        <label htmlFor="identifier" className="text-xs font-medium text-white">
+          {copy.identifierLabel}
         </label>
         <input
           suppressHydrationWarning
@@ -67,12 +85,13 @@ export function LoginForm() {
           name="identifier"
           type="text"
           required
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-zinc-500"
+          placeholder={copy.identifierPlaceholder}
+          className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
         />
       </div>
-      <div className="space-y-1">
-        <label htmlFor="password" className="text-sm text-zinc-700">
-          Senha
+      <div className="space-y-4">
+        <label htmlFor="password" className="text-xs font-medium text-white">
+          {copy.passwordLabel}
         </label>
         <input
           suppressHydrationWarning
@@ -80,29 +99,37 @@ export function LoginForm() {
           name="password"
           type="password"
           required
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-zinc-500"
+          placeholder={copy.passwordPlaceholder}
+          className="h-14 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-white/45"
         />
       </div>
-      <label className="flex items-center gap-2 text-sm text-zinc-700">
-        <input type="checkbox" name="keepLoggedIn" className="h-4 w-4" />
-        Manter conectado
+      <label className="flex items-center gap-2 text-xs text-white/70">
+        <input
+          type="checkbox"
+          name="keepLoggedIn"
+          className="h-4 w-4 rounded border border-white/30 bg-transparent accent-white"
+        />
+        {copy.keepSignedIn}
       </label>
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      {error ? <p className="text-xs text-white">{error}</p> : null}
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-md bg-zinc-900 px-3 py-2 text-white disabled:opacity-60"
+        className="h-12 w-full rounded-lg border border-white bg-white px-4 text-sm font-bold text-black transition hover:bg-white/90 disabled:opacity-60"
       >
-        {loading ? "Entrando..." : "Entrar"}
+        {loading ? copy.submitting : copy.submit}
       </button>
-      <div className="flex justify-between text-sm">
-        <Link href="/register" className="text-zinc-700 hover:text-zinc-900">
-          Criar conta
-        </Link>
-        <Link href="/recover" className="text-zinc-700 hover:text-zinc-900">
-          Recuperar senha
+      <div className="pt-1 text-center text-xs leading-none">
+        <Link href="/recover" className="text-white/70 transition hover:text-white">
+          {copy.forgotPassword}
         </Link>
       </div>
+      <p className="text-center text-xs leading-none text-white/60">
+        {copy.noAccount}{" "}
+        <Link href="/register" className="font-semibold text-white/85 transition hover:text-white">
+          {copy.createAccount}
+        </Link>
+      </p>
     </form>
   );
 }

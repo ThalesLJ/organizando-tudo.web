@@ -29,12 +29,12 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="fixed right-4 top-4 z-50 rounded-md border border-zinc-300/50 bg-[var(--bg-secondary)] px-2 py-1 shadow-sm backdrop-blur">
+    <div className="fixed right-4 top-4 z-50 rounded-lg border border-white/10 bg-white/5 shadow-2xl shadow-black/50 backdrop-blur">
       <select
         suppressHydrationWarning
         value={locale}
         onChange={(event) => void handleChange(event.target.value as AppLocale)}
-        className="rounded border border-zinc-300/50 bg-[var(--bg-secondary)] px-2 py-1 text-xs text-[var(--text-primary)]"
+        className="h-9 rounded-lg border border-white/10 bg-black px-3 text-xs font-medium text-white outline-none focus:border-white/45"
       >
         <option value="en">EN</option>
         <option value="pt">PT</option>
