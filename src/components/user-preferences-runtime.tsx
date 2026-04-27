@@ -22,6 +22,9 @@ type UserPreferencesResponse = {
         primaryButtonText?: string;
         secondaryButtonBackground?: string;
         secondaryButtonText?: string;
+        languageSwitcherBackground?: string;
+        languageSwitcherText?: string;
+        languageSwitcherBorder?: string;
       } | null;
     } | null;
   };
@@ -40,6 +43,9 @@ function applyColors(colors?: {
   primaryButtonText?: string;
   secondaryButtonBackground?: string;
   secondaryButtonText?: string;
+  languageSwitcherBackground?: string;
+  languageSwitcherText?: string;
+  languageSwitcherBorder?: string;
 } | null) {
   if (typeof document === "undefined") {
     return;
@@ -58,6 +64,9 @@ function applyColors(colors?: {
   root.style.setProperty("--primary-button-text", colors?.primaryButtonText ?? "#ffffff");
   root.style.setProperty("--secondary-button-background", colors?.secondaryButtonBackground ?? "#00000000");
   root.style.setProperty("--secondary-button-text", colors?.secondaryButtonText ?? "#946a56");
+  root.style.setProperty("--language-switcher-background", colors?.languageSwitcherBackground ?? "#ffffff");
+  root.style.setProperty("--language-switcher-text", colors?.languageSwitcherText ?? "#5c4033");
+  root.style.setProperty("--language-switcher-border", colors?.languageSwitcherBorder ?? "#946a56");
 }
 
 export function UserPreferencesRuntime() {

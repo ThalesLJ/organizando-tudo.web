@@ -21,6 +21,9 @@ type UserPreferences = {
     primaryButtonText?: string;
     secondaryButtonBackground?: string;
     secondaryButtonText?: string;
+    languageSwitcherBackground?: string;
+    languageSwitcherText?: string;
+    languageSwitcherBorder?: string;
   } | null;
 };
 
@@ -46,6 +49,9 @@ type ColorsPayload = {
   primaryButtonText: string;
   secondaryButtonBackground: string;
   secondaryButtonText: string;
+  languageSwitcherBackground: string;
+  languageSwitcherText: string;
+  languageSwitcherBorder: string;
 };
 
 const DEFAULT_COLORS: ColorsPayload = {
@@ -61,6 +67,27 @@ const DEFAULT_COLORS: ColorsPayload = {
   primaryButtonText: "#ffffff",
   secondaryButtonBackground: "#00000000",
   secondaryButtonText: "#946a56",
+  languageSwitcherBackground: "#ffffff",
+  languageSwitcherText: "#5c4033",
+  languageSwitcherBorder: "#946a56",
+};
+
+const DARK_MODE_COLORS: ColorsPayload = {
+  backgroundPrimary: "#252018",
+  backgroundSecondary: "#00000000",
+  textPrimary: "#ebe2d9",
+  textSecondary: "#c4b8ab",
+  borderColor: "#8a7668",
+  inputBackground: "#362f28",
+  headerBackground: "#4d4036",
+  headerText: "#faf6f2",
+  primaryButtonBackground: "#c9a990",
+  primaryButtonText: "#231c17",
+  secondaryButtonBackground: "#00000000",
+  secondaryButtonText: "#ebe2d9",
+  languageSwitcherBackground: "#362f28",
+  languageSwitcherText: "#ebe2d9",
+  languageSwitcherBorder: "#8a7668",
 };
 
 function applyColors(colors: Partial<ColorsPayload>) {
@@ -100,6 +127,15 @@ function applyColors(colors: Partial<ColorsPayload>) {
   }
   if (colors.secondaryButtonText) {
     root.style.setProperty("--secondary-button-text", colors.secondaryButtonText);
+  }
+  if (colors.languageSwitcherBackground) {
+    root.style.setProperty("--language-switcher-background", colors.languageSwitcherBackground);
+  }
+  if (colors.languageSwitcherText) {
+    root.style.setProperty("--language-switcher-text", colors.languageSwitcherText);
+  }
+  if (colors.languageSwitcherBorder) {
+    root.style.setProperty("--language-switcher-border", colors.languageSwitcherBorder);
   }
 }
 
@@ -159,6 +195,10 @@ export function SettingsPanel() {
           primaryButtonText: prefs?.colors?.primaryButtonText ?? DEFAULT_COLORS.primaryButtonText,
           secondaryButtonBackground: prefs?.colors?.secondaryButtonBackground ?? DEFAULT_COLORS.secondaryButtonBackground,
           secondaryButtonText: prefs?.colors?.secondaryButtonText ?? DEFAULT_COLORS.secondaryButtonText,
+          languageSwitcherBackground:
+            prefs?.colors?.languageSwitcherBackground ?? DEFAULT_COLORS.languageSwitcherBackground,
+          languageSwitcherText: prefs?.colors?.languageSwitcherText ?? DEFAULT_COLORS.languageSwitcherText,
+          languageSwitcherBorder: prefs?.colors?.languageSwitcherBorder ?? DEFAULT_COLORS.languageSwitcherBorder,
         };
 
         setColors(loadedColors);
@@ -193,6 +233,32 @@ export function SettingsPanel() {
       setMessage(messages.settings.colorsSaved);
     } catch (saveError) {
       setError(getErrorMessage(saveError, messages.settings.saveColorsError));
+    } finally {
+      setIsSavingColors(false);
+    }
+  }
+
+  async function handleDarkModeColors() {
+    setIsSavingColors(true);
+    setError("");
+    setMessage("");
+    try {
+      const response = await fetch("/api/user/settings/colors", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(DARK_MODE_COLORS),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(getErrorMessage(data.error, messages.settings.saveColorsError));
+      }
+
+      setColors(DARK_MODE_COLORS);
+      applyColors(DARK_MODE_COLORS);
+      setMessage(messages.settings.darkModeApplied);
+      router.refresh();
+    } catch (darkError) {
+      setError(getErrorMessage(darkError, messages.settings.saveColorsError));
     } finally {
       setIsSavingColors(false);
     }
@@ -266,6 +332,9 @@ export function SettingsPanel() {
     { key: "primaryButtonText", label: messages.settings.primaryButtonText },
     { key: "secondaryButtonBackground", label: messages.settings.secondaryButtonBackground },
     { key: "secondaryButtonText", label: messages.settings.secondaryButtonText },
+    { key: "languageSwitcherBackground", label: messages.settings.languageSwitcherBackground },
+    { key: "languageSwitcherText", label: messages.settings.languageSwitcherText },
+    { key: "languageSwitcherBorder", label: messages.settings.languageSwitcherBorder },
   ];
 
   return (
@@ -336,6 +405,14 @@ export function SettingsPanel() {
               className="ui-button-secondary"
             >
               {messages.settings.resetColors}
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleDarkModeColors()}
+              disabled={isSavingColors}
+              className="ui-button-secondary"
+            >
+              {messages.settings.darkMode}
             </button>
           </div>
         </form>

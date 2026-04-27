@@ -15,6 +15,9 @@
   --primary-button-text: #ffffff;
   --secondary-button-background: #00000000;
   --secondary-button-text: #946a56;
+  --language-switcher-background: #ffffff;
+  --language-switcher-text: #5c4033;
+  --language-switcher-border: #946a56;
 }
 
 @theme inline {

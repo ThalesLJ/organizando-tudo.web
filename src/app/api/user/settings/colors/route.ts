@@ -18,6 +18,9 @@ type UpdateColorsPayload = {
   primaryButtonText?: string;
   secondaryButtonBackground?: string;
   secondaryButtonText?: string;
+  languageSwitcherBackground?: string;
+  languageSwitcherText?: string;
+  languageSwitcherBorder?: string;
 };
 
 function getErrorMessage(error: unknown, fallback: string): string {

@@ -16,6 +16,9 @@ type UserColors = {
   primaryButtonText?: string;
   secondaryButtonBackground?: string;
   secondaryButtonText?: string;
+  languageSwitcherBackground?: string;
+  languageSwitcherText?: string;
+  languageSwitcherBorder?: string;
 };
 
 type ExternalUserApiResponse = {

@@ -22,8 +22,8 @@ const siteUrl =
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "OrganizandoTudo Web",
-    template: "%s · OrganizandoTudo Web",
+    default: "Organizando Tudo",
+    template: "%s · Organizando Tudo",
   },
   description: "Aplicação com autenticação JWT e controle de sessão",
 };
