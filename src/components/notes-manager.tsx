@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { FaEye, FaLock, FaLockOpen, FaTrash } from "react-icons/fa";
 import { AppLoading } from "@/components/app-loading";
 import { useLocaleMessages } from "@/lib/locale-client";
 
@@ -72,6 +73,7 @@ export function NotesManager() {
   const [notes, setNotes] = useState<NoteItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [updatingVisibilityId, setUpdatingVisibilityId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [visibilityFilter, setVisibilityFilter] = useState<"all" | "public" | "private">("all");
@@ -148,6 +150,40 @@ export function NotesManager() {
       setError(extractErrorMessage(deleteError, messages.notes.deleteError));
     } finally {
       setIsDeleting(false);
+    }
+  }
+
+  async function handleToggleVisibility(note: NoteItem) {
+    const nextIsPublic = !note.isPublic;
+
+    setUpdatingVisibilityId(note.id);
+    setError("");
+    try {
+      const response = await fetch(`/api/notes/${note.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isPublic: nextIsPublic }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(extractErrorMessage(data.error, messages.editor.saveError));
+      }
+
+      setNotes((currentNotes) =>
+        currentNotes.map((currentNote) =>
+          currentNote.id === note.id
+            ? {
+                ...currentNote,
+                ...(data.data && typeof data.data === "object" ? data.data : {}),
+                isPublic: nextIsPublic,
+              }
+            : currentNote,
+        ),
+      );
+    } catch (updateError) {
+      setError(extractErrorMessage(updateError, messages.editor.saveError));
+    } finally {
+      setUpdatingVisibilityId(null);
     }
   }
 
@@ -253,27 +289,45 @@ export function NotesManager() {
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {filteredNotes.map((note) => (
           <article key={note.id} className="ui-card p-4">
-            <h3 className="border-b border-[var(--border-color)] pb-2 text-[15px] font-semibold">{note.title}</h3>
+            <h3 className="border-b border-[var(--border-color)] pb-2 text-[15px] font-semibold">
+              <Link href={`/edit-note/${note.id}`} className="transition hover:text-[var(--text-secondary)]">
+                {note.title}
+              </Link>
+            </h3>
             <div
               className={`mt-3 h-[142px] rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-3 text-[13px] ${note.isPublic ? "note-public-content note-scrollbar overflow-y-auto overflow-x-hidden" : "note-private-content flex items-center justify-center overflow-hidden opacity-70"}`}
               dangerouslySetInnerHTML={{ __html: getPreviewContent(note) }}
             />
-            <div className="mt-3 flex items-center justify-between text-xs text-[var(--text-secondary)]">
-              <span>{formatDate(note.updatedAt, locale)}</span>
-              <div className="flex gap-2">
-                <Link href={`/view-note/${note.id}`} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
-                  {messages.notes.view}
-                </Link>
-                <Link href={`/edit-note/${note.id}`} className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]">
-                  {messages.notes.edit}
+            <div className="mt-3 flex items-center justify-between text-[var(--text-secondary)]">
+              <span className="text-[15px] font-normal">{formatDate(note.updatedAt, locale)}</span>
+              <div className="flex items-center gap-3 text-lg">
+                <button
+                  type="button"
+                  disabled={updatingVisibilityId === note.id}
+                  onClick={() => void handleToggleVisibility(note)}
+                  aria-label={note.isPublic ? messages.notes.public : messages.notes.private}
+                  title={note.isPublic ? messages.notes.public : messages.notes.private}
+                  className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)] disabled:opacity-60"
+                >
+                  {note.isPublic ? <FaLockOpen /> : <FaLock />}
+                </button>
+                <Link
+                  href={`/view-note/${note.id}`}
+                  aria-label={messages.notes.view}
+                  title={messages.notes.view}
+                  className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]"
+                >
+                  <FaEye />
                 </Link>
                 <button
                   type="button"
                   disabled={isDeleting}
                   onClick={() => void handleDelete(note.id)}
+                  aria-label={messages.notes.delete}
+                  title={messages.notes.delete}
                   className="text-[var(--text-secondary)] transition hover:text-[var(--text-primary)] disabled:opacity-60"
                 >
-                  {messages.notes.delete}
+                  <FaTrash />
                 </button>
               </div>
             </div>

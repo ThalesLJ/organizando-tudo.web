@@ -40,10 +40,21 @@ function extractErrorMessage(error: unknown, fallback: string): string {
   return fallback;
 }
 
+function normalizeNoteContent(value: string): string {
+  const trimmedValue = value.trim();
+  if (!trimmedValue || /^<p>\s*<\/p>$/.test(trimmedValue)) {
+    return "";
+  }
+  return trimmedValue;
+}
+
 export function NoteEditor({ mode, noteId }: NoteEditorProps) {
   const { messages } = useLocaleMessages();
   const router = useRouter();
   const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [originalTitle, setOriginalTitle] = useState("");
+  const [originalContent, setOriginalContent] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [isLoading, setIsLoading] = useState(mode === "edit");
   const [isSaving, setIsSaving] = useState(false);
@@ -59,9 +70,12 @@ export function NoteEditor({ mode, noteId }: NoteEditorProps) {
     ],
     immediatelyRender: false,
     content: "",
+    onUpdate: ({ editor: currentEditor }) => {
+      setContent(currentEditor.getHTML());
+    },
     editorProps: {
       attributes: {
-        class: "min-h-[230px] rounded-b-lg border border-[var(--border-color)] bg-[var(--input-background)] p-4 text-sm text-[var(--text-primary)] outline-none",
+        class: "h-[400px] min-h-[400px] resize-y overflow-y-auto overflow-x-hidden rounded-b-lg border border-[var(--border-color)] bg-[var(--input-background)] p-4 text-sm text-[var(--text-primary)] outline-none note-scrollbar",
       },
     },
   });
@@ -82,6 +96,9 @@ export function NoteEditor({ mode, noteId }: NoteEditorProps) {
         }
         const note = data.data as NoteResponse;
         setTitle(note.title);
+        setOriginalTitle(note.title);
+        setContent(note.content || "");
+        setOriginalContent(note.content || "");
         setIsPublic(note.isPublic);
         editor?.commands.setContent(note.content || "");
       } catch (loadError) {
@@ -93,6 +110,10 @@ export function NoteEditor({ mode, noteId }: NoteEditorProps) {
 
     void loadNote();
   }, [editor, mode, noteId, messages.viewer.loadError]);
+
+  const hasTitleChanged = title.trim() !== originalTitle.trim();
+  const hasContentChanged = normalizeNoteContent(content) !== normalizeNoteContent(originalContent);
+  const canSave = Boolean(editor) && !isSaving && title.trim().length > 0 && (hasTitleChanged || hasContentChanged);
 
   async function handleSubmit(shouldClose: boolean) {
     if (!editor) {
@@ -126,6 +147,8 @@ export function NoteEditor({ mode, noteId }: NoteEditorProps) {
       }
 
       const savedNoteId = mode === "create" ? (data.data?.id as string | undefined) : noteId;
+      setOriginalTitle(payload.title);
+      setOriginalContent(payload.content);
       if (savedNoteId) {
         router.replace(`/edit-note/${savedNoteId}`);
         router.refresh();
@@ -180,7 +203,7 @@ export function NoteEditor({ mode, noteId }: NoteEditorProps) {
       <div className={`grid grid-cols-1 gap-2 ${mode === "edit" ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
         <button
           type="button"
-          disabled={isSaving || title.trim().length === 0}
+          disabled={!canSave}
           onClick={() => void handleSubmit(false)}
           className="ui-button-primary disabled:opacity-60"
         >
@@ -189,7 +212,7 @@ export function NoteEditor({ mode, noteId }: NoteEditorProps) {
         {mode === "edit" ? (
           <button
             type="button"
-            disabled={isSaving || title.trim().length === 0}
+            disabled={!canSave}
             onClick={() => void handleSubmit(true)}
             className="ui-button-primary disabled:opacity-60"
           >

@@ -88,7 +88,7 @@ export function NoteViewer({ noteId }: NoteViewerProps) {
   return (
     <main className="min-h-screen w-full bg-[var(--bg-primary)] px-4 py-6 text-[var(--text-primary)]">
       <Link
-        href="/login"
+        href="/notes"
         aria-label="Voltar"
         className="fixed left-4 top-4 z-50 text-2xl text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]"
       >

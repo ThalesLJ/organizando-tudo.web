@@ -139,6 +139,28 @@ input[type="color"] {
     border-color: color-mix(in srgb, var(--border-color) 85%, black 15%);
   }
 
+  .ui-input:-webkit-autofill,
+  .ui-input:-webkit-autofill:hover,
+  .ui-input:-webkit-autofill:focus,
+  .ui-input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--text-primary) !important;
+    caret-color: var(--text-primary);
+    -webkit-box-shadow: 0 0 0 1000px var(--input-background) inset,
+      0 0 0 1000px var(--bg-primary) inset !important;
+    box-shadow: 0 0 0 1000px var(--input-background) inset,
+      0 0 0 1000px var(--bg-primary) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  .ui-input:autofill,
+  .ui-input:autofill:hover,
+  .ui-input:autofill:focus {
+    color: var(--text-primary);
+    caret-color: var(--text-primary);
+    box-shadow: 0 0 0 1000px var(--input-background) inset,
+      0 0 0 1000px var(--bg-primary) inset !important;
+  }
+
   .ui-button-primary {
     border: 1px solid var(--primary-button-background);
     border-radius: 0.5rem;

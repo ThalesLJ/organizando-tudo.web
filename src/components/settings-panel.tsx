@@ -231,6 +231,7 @@ export function SettingsPanel() {
 
       applyColors(colors);
       setMessage(messages.settings.colorsSaved);
+      await router.refresh();
     } catch (saveError) {
       setError(getErrorMessage(saveError, messages.settings.saveColorsError));
     } finally {
@@ -256,7 +257,7 @@ export function SettingsPanel() {
       setColors(DARK_MODE_COLORS);
       applyColors(DARK_MODE_COLORS);
       setMessage(messages.settings.darkModeApplied);
-      router.refresh();
+      await router.refresh();
     } catch (darkError) {
       setError(getErrorMessage(darkError, messages.settings.saveColorsError));
     } finally {
@@ -308,6 +309,7 @@ export function SettingsPanel() {
       setColors(DEFAULT_COLORS);
       applyColors(DEFAULT_COLORS);
       setMessage(messages.settings.colorsReset);
+      await router.refresh();
     } catch (resetError) {
       setError(getErrorMessage(resetError, messages.settings.saveColorsError));
     } finally {
