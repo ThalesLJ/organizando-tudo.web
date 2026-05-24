@@ -33,6 +33,32 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env
 
+# ai agent local config
+/.agents/
+/.agy/
+/.amp/
+/.augment/
+/.auggie/
+/.bob/
+/.claude/
+/.codebuddy/
+/.codex/
+/.cursor/
+/.devin/
+/.forge/
+/.gemini/
+/.github/
+/.github/agents/
+/.github/prompts/
+/.github/skills/
+/.goose/
+/.iflow/
+/.junie/
+/.kilocode/
+/.kimi/
+/.myagent/
+/.vscode/
+
 # vercel
 .vercel
 
