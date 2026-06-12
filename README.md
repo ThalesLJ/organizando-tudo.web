@@ -132,10 +132,56 @@ Runs ESLint for the project.
 
 ## Deployment
 
-The repository includes a GitHub Actions workflow for deployment on push to `master`. The workflow targets a self-hosted Linux runner, syncs a single active version to the configured deployment directory, installs dependencies, builds the application, starts it with PM2, and validates the public health endpoint.
+The repository includes a GitHub Actions workflow for deploying one active web version at a time. The workflow is defined in [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml) and is also documented in more detail in [`docs/deploy-web.md`](./docs/deploy-web.md).
+
+Deployment runs automatically on pushes to `master` and can also be started manually through `workflow_dispatch`. The first job, `deploy-web`, runs on the configured self-hosted Linux runner using Bash. It validates the required repository variables, checks that `pm2` is available on the runner host, prepares the deployment directories, synchronizes the repository into the active `current` directory, copies the configured environment file to `.env`, installs dependencies, builds the Next.js application, and restarts the PM2 process.
+
+The deployment directory is always treated as a single active version:
+
+```text
+WEB_DEPLOY_BASE_DIR/
+├── current/
+└── logs/
+```
+
+During synchronization, the workflow excludes `.git`, `.github`, `node_modules`, and `.next`. This keeps deployment output focused on the runtime application while allowing the runner to recreate dependencies and build artifacts on the server.
+
+After copying the environment file, the workflow reads `PORT` from `.env`. That port is then used to start the application with PM2:
+
+```bash
+PORT="$web_port" pm2 start node_modules/next/dist/bin/next --name "$WEB_PM2_APP_NAME" --time --output "$log_file" --error "$log_file" -- start -p "$web_port"
+```
+
+Before starting the new process, the workflow deletes any existing PM2 process with the same application name. It then runs `pm2 save` and verifies that PM2 can describe the process. Logs are written to `WEB_DEPLOY_BASE_DIR/logs/<WEB_PM2_APP_NAME>.log`.
+
+After the self-hosted deployment job completes, a second GitHub-hosted job named `validate-web-public-health` runs on `ubuntu-latest`. This job calls the public health endpoint from outside the VPS and fails the workflow if the response does not include `"status":"ok"`.
+
+Validated public health endpoint:
+
+```text
+https://organizandotudo.thaleslj.com/api/health
+```
+
+Expected health response shape:
+
+```json
+{
+  "status": "ok",
+  "service": "web",
+  "timestamp": "2026-01-01T00:00:00.000Z"
+}
+```
 
 Required repository variables:
 
 - `WEB_DEPLOY_BASE_DIR`
 - `WEB_ENV_FILE`
 - `WEB_PM2_APP_NAME`
+
+Recommended PM2 application name:
+
+```text
+WEB_PM2_APP_NAME=organizandotudo-web
+```
+
+The VPS runner must have Node.js 22, `pm2`, `rsync`, `curl`, and `bash` available. The external environment file referenced by `WEB_ENV_FILE` must exist and include `PORT`. Apache, or the active reverse proxy, should route public traffic to that same port.
