@@ -132,7 +132,7 @@ Runs ESLint for the project.
 
 ## Deployment
 
-The repository includes a GitHub Actions workflow for deploying one active web version at a time. The workflow is defined in [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml) and is also documented in more detail in [`docs/deploy-web.md`](./docs/deploy-web.md).
+The repository includes a GitHub Actions workflow for deploying one active web version at a time. The workflow is defined in [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml).
 
 Deployment runs automatically on pushes to `master` and can also be started manually through `workflow_dispatch`. The first job, `deploy-web`, runs on the configured self-hosted Linux runner using Bash. It validates the required repository variables, checks that `pm2` is available on the runner host, prepares the deployment directories, synchronizes the repository into the active `current` directory, copies the configured environment file to `.env`, installs dependencies, builds the Next.js application, and restarts the PM2 process.
 
