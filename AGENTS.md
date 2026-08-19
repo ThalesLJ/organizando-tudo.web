@@ -62,4 +62,13 @@ Replace `<your-agent>` with one of the supported integrations below:
 Read the local project documentation before changing architecture, behavior, routing, localization, theme customization, or deployment:
 
 - [`README.md`](./README.md)
-- [`Specify folder`](./specify)
+- [`Specify folder`](./.specify)
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current constitution:
+- [`.specify/memory/constitution.md`](./.specify/memory/constitution.md)
+
+Current specification:
+- [`specs/007-privacy-policy-page/spec.md`](./specs/007-privacy-policy-page/spec.md)
+<!-- SPECKIT END -->

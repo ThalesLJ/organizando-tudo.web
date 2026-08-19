@@ -1,18 +1,23 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { AppLocale } from "@/lib/messages";
 import { readLocaleFromCookie, writeLocale } from "@/lib/locale-client";
 
 export function LanguageSwitcher() {
   const router = useRouter();
+  const pathname = usePathname();
   const [locale, setLocale] = useState<AppLocale>(() => {
     if (typeof document === "undefined") {
       return "en";
     }
     return readLocaleFromCookie();
   });
+
+  if (pathname === "/policy" || pathname === "/politica") {
+    return null;
+  }
 
   async function handleChange(nextLocale: AppLocale) {
     setLocale(nextLocale);
