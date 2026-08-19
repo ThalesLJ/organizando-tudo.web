@@ -1,78 +1,140 @@
 # Organizando Tudo Web
 
-Organizando Tudo Web is a multilingual Next.js application for personal organization workflows, combining authentication, notes, financial tracking, user preferences, and a Backend for Frontend (BFF) layer that protects communication with the external API.
-
-The project was developed using Specification-Driven Development (SDD). More information about the adopted SDD workflow and Microsoft Spec Kit usage is available in [`AGENTS.md`](./AGENTS.md).
-
-## Features
-
-- Authentication flow with login, account creation, password recovery, session persistence, and logout.
-- HttpOnly cookie-based JWT session handling, keeping tokens inaccessible to client-side code.
-- Private dashboard with financial summary, budget overview, and expenses by category.
-- Financial management for budgets and expenses with create, update, list, and delete operations.
-- Rich-text notes powered by TipTap, including creation, editing, listing, search, sorting, visibility control, and public note viewing.
-- User preferences for language and interface colors, persisted through internal API routes.
-- Multilingual interface with English, Portuguese, and Spanish dictionaries.
-- Theme customization through CSS variables and runtime preference loading.
-- Internal health check endpoint for deployment validation.
-- Automated deployment workflow using GitHub Actions, a self-hosted runner, and PM2.
+Organizando Tudo Web is a modern, multilingual Next.js web application for personal productivity and organization. It provides secure authentication, rich-text note taking, comprehensive financial budgeting and expense tracking, and personalized user preferences (themes and languages). The application incorporates a robust Backend for Frontend (BFF) layer that encapsulates and protects all communication with the backend API.
 
 ## Tech Stack
 
-- [Next.js](https://nextjs.org/) 16 with App Router
-- [React](https://react.dev/) 19
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/) 4
-- [TipTap](https://tiptap.dev/) rich-text editor
-- [Zod](https://zod.dev/) for request validation
-- [React Icons](https://react-icons.github.io/react-icons/)
-- ESLint with Next.js Core Web Vitals and TypeScript configuration
+- **Framework**: [Next.js](https://nextjs.org/) 16 (App Router)
+- **UI Library**: [React](https://react.dev/) 19
+- **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict Mode)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) 4 with dynamic CSS variables
+- **Rich Text Editor**: [TipTap](https://tiptap.dev/)
+- **Validation**: [Zod](https://zod.dev/)
+- **Icons**: [React Icons](https://react-icons.github.io/react-icons/)
+- **Code Quality**: ESLint with Next.js Core Web Vitals and TypeScript configuration
 
 ## Architecture
 
-This application follows a Backend for Frontend architecture. The browser never calls the external API directly. Client components communicate with internal Next.js API routes, and those server-side routes forward requests to the external API when required.
-
-Expected data flow:
+This application follows a strict **Backend for Frontend (BFF)** architecture pattern. Client-side browser code never calls external backend services directly; all client requests flow through internal Next.js server-side route handlers.
 
 ```text
-Client -> Next.js BFF -> External API -> Next.js BFF -> Client
+Browser Client -> Next.js BFF (Route Handlers) -> External API -> Next.js BFF -> Browser Client
 ```
 
-The BFF layer is responsible for:
+### Architectural Highlights
 
-- Reading and writing authentication cookies.
-- Forwarding JWT tokens as Bearer tokens to the external API.
-- Keeping sensitive logic on the server side.
-- Normalizing selected external API responses.
-- Protecting private application routes.
+- **Secure Session Isolation**: Authentication tokens are stored exclusively in `HttpOnly` cookies and forwarded as Bearer tokens to external APIs on the server side, keeping tokens completely inaccessible to client-side JavaScript.
+- **Route Protection**: Edge middleware (`src/middleware.ts`) and server-side authentication guards intercept private page requests, automatically redirecting unauthenticated users to `/login`.
+- **Internationalization (i18n)**: Centralized multilingual dictionary catalog (`en`, `pt`, `es`) supporting runtime locale switching with automatic cookie persistence and English fallback.
+- **Dynamic Theming**: UI palette customization powered by CSS custom properties and client-side preference synchronization.
 
 ## Main Routes
 
-Public pages:
+### Public Pages
 
-- `/login`
-- `/register`
-- `/recover`
-- `/view-note/:id`
+- `/login` — User authentication and login form
+- `/register` — Account registration
+- `/recover` — Password reset and recovery flow
+- `/view-note/:id` — Public read-only note viewer
+- `/policy` — Privacy policy (English route)
+- `/politica` — Privacy policy (Portuguese route)
 
-Private pages:
+### Private Pages (Protected)
 
-- `/dashboard`
-- `/financial`
-- `/notes`
-- `/add-note`
-- `/add-note/:id`
-- `/edit-note`
-- `/edit-note/:id`
-- `/settings`
+- `/dashboard` — Financial overview, budget progress, and quick statistics
+- `/financial` — Full budget and expense management
+- `/notes` — Note management, search, filtering, and sorting
+- `/add-note` — Rich-text note creation
+- `/add-note/:id` — Note creation with parent reference
+- `/edit-note/:id` — Note editing and visibility management
+- `/settings` — User profile, language selection, and theme color customization
+
+### Internal BFF API Routes
+
+- `/api/auth/*` — Session login, registration, recovery, and logout
+- `/api/budgets/*` — Budget CRUD operations proxy
+- `/api/expenses/*` — Expense tracking operations proxy
+- `/api/notes/*` — Note CRUD and public note access proxy
+- `/api/user/*` — User profile and preferences endpoints
+- `/api/health` — Internal service health check endpoint
 
 ## Project Structure
 
-TODO: This section will be completed when the project structure reaches its final level.
+```text
+organizando-tudo.web/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml              # CI/CD deployment workflow for self-hosted Linux runner
+├── .specify/                       # Spec Kit memory, configurations, and templates
+│   └── memory/
+│       └── constitution.md         # Project constitution and architectural principles
+├── specs/                          # Specification-Driven Development feature specs
+├── src/
+│   ├── app/
+│   │   ├── (private)/              # Authenticated route group
+│   │   │   ├── add-note/           # Add note page
+│   │   │   ├── dashboard/          # Private dashboard page with financial summaries
+│   │   │   ├── edit-note/          # Edit note page
+│   │   │   ├── financial/          # Financial manager (budgets & expenses)
+│   │   │   ├── notes/              # Notes management list page
+│   │   │   ├── settings/           # User preferences and profile settings page
+│   │   │   ├── view-note/          # Private note viewer page
+│   │   │   └── layout.tsx          # Private dashboard layout with navigation header
+│   │   ├── api/                    # Backend for Frontend (BFF) internal API route handlers
+│   │   │   ├── auth/               # Auth routes (login, register, recover, logout)
+│   │   │   ├── budgets/            # Budget management proxy endpoints
+│   │   │   ├── expenses/           # Expense tracking proxy endpoints
+│   │   │   ├── health/             # Internal health check endpoint
+│   │   │   ├── notes/              # Note CRUD and public note endpoints
+│   │   │   └── user/               # User profile and preferences endpoints
+│   │   ├── login/                  # Public login page
+│   │   ├── policy/                 # Privacy policy page (English route)
+│   │   ├── politica/               # Privacy policy page (Portuguese route)
+│   │   ├── recover/                # Password recovery page
+│   │   ├── register/               # User registration page
+│   │   ├── view-note/              # Public note viewer route
+│   │   ├── globals.css             # Tailwind CSS styles and dynamic CSS variables
+│   │   ├── layout.tsx              # Root layout with font definitions and providers
+│   │   └── page.tsx                # Root redirect page
+│   ├── components/                 # Reusable UI and domain components
+│   │   ├── app-loading.tsx         # Global loading screen component
+│   │   ├── auth-page-shell.tsx     # Layout wrapper for authentication screens
+│   │   ├── dashboard-financial.tsx # Financial summary card widgets
+│   │   ├── financial-manager.tsx   # Budget and expense management UI
+│   │   ├── language-switcher.tsx   # Locale selector dropdown
+│   │   ├── login-form.tsx          # Authentication form
+│   │   ├── logout-button.tsx       # Session termination button
+│   │   ├── note-editor.tsx         # TipTap rich-text note editor
+│   │   ├── note-viewer.tsx         # Note display component
+│   │   ├── notes-manager.tsx       # Note listing, search, and sorting UI
+│   │   ├── privacy-policy-content.tsx # Privacy policy content renderer
+│   │   ├── recover-form.tsx        # Password recovery form
+│   │   ├── register-form.tsx       # User registration form
+│   │   ├── settings-panel.tsx      # Preferences and account settings UI
+│   │   └── user-preferences-runtime.tsx # Client-side runtime theme & preference loader
+│   ├── lib/                        # Shared utilities, schemas, and helpers
+│   │   ├── auth-config.ts          # Auth cookie configuration constants
+│   │   ├── auth.ts                 # Server-side cookie and session helpers
+│   │   ├── external-api.ts         # External API client for BFF route handlers
+│   │   ├── http.ts                 # Standard HTTP fetch wrapper
+│   │   ├── locale-client.ts        # Client-side locale detection and cookie updater
+│   │   ├── messages.ts             # Centralized i18n dictionaries (en, pt, es)
+│   │   ├── policy-content.ts       # Privacy policy localized copy
+│   │   ├── require-auth.ts         # Server-side authentication guard helper
+│   │   └── schemas.ts              # Zod validation schemas
+│   └── middleware.ts               # Next.js edge middleware for route protection
+├── .env.example                    # Template environment variables file
+├── eslint.config.mjs               # ESLint configuration
+├── next.config.ts                  # Next.js application configuration
+├── package.json                    # Project metadata, dependencies, and npm scripts
+├── postcss.config.mjs              # PostCSS configuration for Tailwind CSS
+├── README.md                       # Project documentation
+└── tsconfig.json                   # TypeScript compiler configuration
+```
 
 ## Environment Variables
 
-Create a local `.env` file based on [`.env.example`](./.env.example).
+Create a local `.env` file in the project root based on [`.env.example`](./.env.example):
 
 ```env
 PORT=3001
@@ -80,108 +142,87 @@ NEXT_PUBLIC_APP_URL=http://localhost:3001
 EXTERNAL_USER_API_URL=http://localhost:3000
 ```
 
-Variables:
+### Variable Descriptions
 
-- `PORT`: port used by the application when running locally or under PM2.
-- `NEXT_PUBLIC_APP_URL`: public application URL used by the frontend environment.
-- `EXTERNAL_USER_API_URL`: external API base URL or full user endpoint.
-
-The application also supports `NEXT_PUBLIC_SITE_URL` for metadata URL resolution when available.
+- `PORT`: Port used by the Next.js application during local execution and under PM2 process management.
+- `NEXT_PUBLIC_APP_URL`: Public-facing application URL consumed by client components.
+- `EXTERNAL_USER_API_URL`: Backend API base URL consumed by server-side BFF route handlers.
+- `NEXT_PUBLIC_SITE_URL` *(Optional)*: Canonical site URL used for OpenGraph and metadata resolution.
 
 ## Getting Started
 
-Install dependencies:
+### Prerequisites
 
-```bash
-npm install
-```
+- [Node.js](https://nodejs.org/) (version 20 LTS or 22 LTS recommended)
+- `npm` (version 10+)
 
-Run the development server:
+### Installation
 
-```bash
-npm run dev
-```
+1. Clone the repository and navigate to the project directory:
+   ```bash
+   cd organizando-tudo.web
+   ```
 
-Open [http://localhost:3001](http://localhost:3001).
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure your local environment:
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:3001](http://localhost:3001) in your browser.
 
 ## Available Scripts
 
 ```bash
+# Starts the Next.js development server on port 3001
 npm run dev
-```
 
-Starts the Next.js development server on port `3001`.
-
-```bash
+# Compiles the production build
 npm run build
-```
 
-Builds the production application.
-
-```bash
+# Starts the compiled production application
 npm run start
-```
 
-Starts the production server on port `3001`.
-
-```bash
+# Runs ESLint across the codebase
 npm run lint
 ```
 
-Runs ESLint for the project.
-
 ## Deployment
 
-The repository includes a GitHub Actions workflow for deploying one active web version at a time. The workflow is defined in [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml).
+The project includes an automated deployment pipeline powered by GitHub Actions defined in [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml).
 
-Deployment runs automatically on pushes to `master` and can also be started manually through `workflow_dispatch`. The first job, `deploy-web`, runs on the configured self-hosted Linux runner using Bash. It validates the required repository variables, checks that `pm2` is available on the runner host, prepares the deployment directories, synchronizes the repository into the active `current` directory, copies the configured environment file to `.env`, installs dependencies, builds the Next.js application, and restarts the PM2 process.
+- **Target Architecture**: Self-hosted Linux runner with PM2 process supervisor.
+- **Workflow Triggers**: Automatic on push to `master`, or manual via `workflow_dispatch`.
+- **Deployment Flow**:
+  1. Synchronizes project source to active release directory (excluding caches and dependencies).
+  2. Injects production environment configuration from `WEB_ENV_FILE`.
+  3. Installs clean production dependencies (`npm install`) and builds the Next.js application (`npm run build`).
+  4. Restarts the PM2 process with zero-downtime reload under `WEB_PM2_APP_NAME`.
+  5. Runs post-deployment health check against `https://organizandotudo.thaleslj.com/api/health`.
 
-The deployment directory is always treated as a single active version:
+## SDD (Microsoft Speckit)
 
-```text
-WEB_DEPLOY_BASE_DIR/
-├── current/
-└── logs/
-```
+This project is developed using **Specification-Driven Development (SDD)** with Microsoft Spec Kit. All features, architecture modifications, and bug fixes must originate from structured specifications before code changes are applied.
 
-During synchronization, the workflow excludes `.git`, `.github`, `node_modules`, and `.next`. This keeps deployment output focused on the runtime application while allowing the runner to recreate dependencies and build artifacts on the server.
+- **Agent Guidance & Setup**: [`AGENTS.md`](./AGENTS.md)
+- **Project Constitution**: [`.specify/memory/constitution.md`](./.specify/memory/constitution.md)
+- **Feature Specifications**: [`specs/`](./specs/)
 
-After copying the environment file, the workflow reads `PORT` from `.env`. That port is then used to start the application with PM2:
-
-```bash
-PORT="$web_port" pm2 start node_modules/next/dist/bin/next --name "$WEB_PM2_APP_NAME" --time --output "$log_file" --error "$log_file" -- start -p "$web_port"
-```
-
-Before starting the new process, the workflow deletes any existing PM2 process with the same application name. It then runs `pm2 save` and verifies that PM2 can describe the process. Logs are written to `WEB_DEPLOY_BASE_DIR/logs/<WEB_PM2_APP_NAME>.log`.
-
-After the self-hosted deployment job completes, a second GitHub-hosted job named `validate-web-public-health` runs on `ubuntu-latest`. This job calls the public health endpoint from outside the VPS and fails the workflow if the response does not include `"status":"ok"`.
-
-Validated public health endpoint:
+Main Spec Kit commands:
 
 ```text
-https://organizandotudo.thaleslj.com/api/health
+/speckit.constitution - Establish or update project principles
+/speckit.specify      - Create a baseline feature specification
+/speckit.plan         - Create technical implementation plan
+/speckit.tasks        - Generate actionable task breakdown
+/speckit.implement    - Execute implementation tasks
 ```
-
-Expected health response shape:
-
-```json
-{
-  "status": "ok",
-  "service": "web",
-  "timestamp": "2026-01-01T00:00:00.000Z"
-}
-```
-
-Required repository variables:
-
-- `WEB_DEPLOY_BASE_DIR`
-- `WEB_ENV_FILE`
-- `WEB_PM2_APP_NAME`
-
-Recommended PM2 application name:
-
-```text
-WEB_PM2_APP_NAME=organizandotudo-web
-```
-
-The VPS runner must have Node.js 22, `pm2`, `rsync`, `curl`, and `bash` available. The external environment file referenced by `WEB_ENV_FILE` must exist and include `PORT`. Apache, or the active reverse proxy, should route public traffic to that same port.
